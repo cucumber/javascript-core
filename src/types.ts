@@ -298,7 +298,7 @@ export interface TestPlanIngredients {
   /**
    * Identifier for the test run within which this plan will be executed
    */
-  testRunStartedId: string
+  testRunStartedId?: string
   /**
    * The Gherkin document that has been processed
    */
