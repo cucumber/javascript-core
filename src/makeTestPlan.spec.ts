@@ -37,7 +37,7 @@ function parseGherkin(
 
 describe('makeTestPlan', () => {
   class FakeWorld {}
-
+  const testRunStartedId = 'run-id'
   let newId: () => string
 
   beforeEach(() => {
@@ -51,6 +51,7 @@ describe('makeTestPlan', () => {
 
       const result = makeTestPlan(
         {
+          testRunStartedId,
           gherkinDocument,
           pickles,
           supportCodeLibrary,
@@ -69,6 +70,7 @@ describe('makeTestPlan', () => {
 
       const result = makeTestPlan(
         {
+          testRunStartedId,
           gherkinDocument,
           pickles,
           supportCodeLibrary,
@@ -86,11 +88,7 @@ describe('makeTestPlan', () => {
       const supportCodeLibrary = buildSupportCode({ newId }).build()
 
       const result = makeTestPlan(
-        {
-          gherkinDocument,
-          pickles,
-          supportCodeLibrary,
-        },
+        { testRunStartedId, gherkinDocument, pickles, supportCodeLibrary },
         {
           newId,
         }
@@ -111,11 +109,7 @@ describe('makeTestPlan', () => {
       const supportCodeLibrary = buildSupportCode({ newId }).build()
 
       const result = makeTestPlan(
-        {
-          gherkinDocument,
-          pickles,
-          supportCodeLibrary,
-        },
+        { testRunStartedId, gherkinDocument, pickles, supportCodeLibrary },
         {
           newId,
           strategy: {
@@ -154,11 +148,7 @@ describe('makeTestPlan', () => {
         .build()
 
       const result = makeTestPlan(
-        {
-          gherkinDocument,
-          pickles,
-          supportCodeLibrary,
-        },
+        { testRunStartedId, gherkinDocument, pickles, supportCodeLibrary },
         {
           newId,
         }
@@ -172,11 +162,7 @@ describe('makeTestPlan', () => {
       const supportCodeLibrary = buildSupportCode({ newId }).build()
 
       const result = makeTestPlan(
-        {
-          gherkinDocument,
-          pickles,
-          supportCodeLibrary,
-        },
+        { testRunStartedId, gherkinDocument, pickles, supportCodeLibrary },
         {
           newId,
         }
@@ -201,11 +187,7 @@ describe('makeTestPlan', () => {
         .build()
 
       const result = makeTestPlan(
-        {
-          gherkinDocument,
-          pickles,
-          supportCodeLibrary,
-        },
+        { testRunStartedId, gherkinDocument, pickles, supportCodeLibrary },
         {
           newId,
         }
@@ -235,11 +217,7 @@ describe('makeTestPlan', () => {
         .build()
 
       const result = makeTestPlan(
-        {
-          gherkinDocument,
-          pickles,
-          supportCodeLibrary,
-        },
+        { testRunStartedId, gherkinDocument, pickles, supportCodeLibrary },
         {
           newId,
         }
@@ -269,11 +247,7 @@ describe('makeTestPlan', () => {
         .build()
 
       const result = makeTestPlan(
-        {
-          gherkinDocument,
-          pickles,
-          supportCodeLibrary,
-        },
+        { testRunStartedId, gherkinDocument, pickles, supportCodeLibrary },
         {
           newId,
         }
@@ -308,11 +282,7 @@ describe('makeTestPlan', () => {
         .build()
 
       const result = makeTestPlan(
-        {
-          gherkinDocument,
-          pickles,
-          supportCodeLibrary,
-        },
+        { testRunStartedId, gherkinDocument, pickles, supportCodeLibrary },
         {
           newId,
         }
@@ -359,11 +329,7 @@ describe('makeTestPlan', () => {
         .build()
 
       const result = makeTestPlan(
-        {
-          gherkinDocument,
-          pickles,
-          supportCodeLibrary,
-        },
+        { testRunStartedId, gherkinDocument, pickles, supportCodeLibrary },
         {
           newId,
         }
@@ -414,11 +380,7 @@ describe('makeTestPlan', () => {
         .build()
 
       const result = makeTestPlan(
-        {
-          gherkinDocument,
-          pickles,
-          supportCodeLibrary,
-        },
+        { testRunStartedId, gherkinDocument, pickles, supportCodeLibrary },
         {
           newId,
         }
@@ -484,11 +446,7 @@ describe('makeTestPlan', () => {
         .build()
 
       const result = makeTestPlan(
-        {
-          gherkinDocument,
-          pickles,
-          supportCodeLibrary,
-        },
+        { testRunStartedId, gherkinDocument, pickles, supportCodeLibrary },
         {
           newId,
         }
@@ -528,11 +486,7 @@ describe('makeTestPlan', () => {
         .build()
 
       const result = makeTestPlan(
-        {
-          gherkinDocument,
-          pickles,
-          supportCodeLibrary,
-        },
+        { testRunStartedId, gherkinDocument, pickles, supportCodeLibrary },
         {
           newId,
         }
@@ -566,11 +520,7 @@ describe('makeTestPlan', () => {
         .build()
 
       const result = makeTestPlan(
-        {
-          gherkinDocument,
-          pickles,
-          supportCodeLibrary,
-        },
+        { testRunStartedId, gherkinDocument, pickles, supportCodeLibrary },
         {
           newId,
         }
@@ -605,11 +555,7 @@ describe('makeTestPlan', () => {
         .build()
 
       const result = makeTestPlan(
-        {
-          gherkinDocument,
-          pickles,
-          supportCodeLibrary,
-        },
+        { testRunStartedId, gherkinDocument, pickles, supportCodeLibrary },
         {
           newId,
         }
@@ -657,6 +603,7 @@ describe('makeTestPlan', () => {
                 id: '10',
               },
             ],
+            testRunStartedId,
           },
         },
       ])

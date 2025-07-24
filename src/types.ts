@@ -296,6 +296,10 @@ export type MatchedStep = {
  */
 export interface TestPlanIngredients {
   /**
+   * Identifier for the test run within which this plan will be executed
+   */
+  testRunStartedId: string
+  /**
    * The Gherkin document that has been processed
    */
   gherkinDocument: GherkinDocument

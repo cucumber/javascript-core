@@ -34,7 +34,7 @@ export function makeTestPlan(
   ingredients: TestPlanIngredients,
   options: TestPlanOptions = {}
 ): AssembledTestPlan {
-  const { gherkinDocument, pickles, supportCodeLibrary } = ingredients
+  const { testRunStartedId, gherkinDocument, pickles, supportCodeLibrary } = ingredients
   const {
     newId = IdGenerator.uuid(),
     strategy = namingStrategy(
@@ -61,6 +61,7 @@ export function makeTestPlan(
             id: this.id,
             pickleId: pickle.id,
             testSteps: this.steps.map((step) => step.toMessage()),
+            testRunStartedId,
           }
         },
       }
