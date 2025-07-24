@@ -1,6 +1,6 @@
 {
   "name": "@cucumber/core",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Core test case composition library for building a Cucumber implementation",
   "type": "commonjs",
   "main": "dist/index.js",
