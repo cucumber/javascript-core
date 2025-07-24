@@ -1,0 +1,219 @@
+import {
+  CucumberExpression,
+  ParameterType,
+  ParameterTypeRegistry,
+  RegularExpression,
+} from '@cucumber/cucumber-expressions'
+import { HookType, StepDefinitionPatternType } from '@cucumber/messages'
+import parse from '@cucumber/tag-expressions'
+
+import { SupportCodeLibraryImpl } from './SupportCodeLibraryImpl'
+import {
+  DefinedHook,
+  DefinedParameterType,
+  DefinedStep,
+  NewHook,
+  NewParameterType,
+  NewStep,
+  SupportCodeBuilder,
+  UndefinedParameterType,
+} from './types'
+
+type WithId<T> = { id: string } & T
+
+/**
+ * @internal
+ */
+export class SupportCodeBuilderImpl implements SupportCodeBuilder {
+  private readonly parameterTypeRegistry = new ParameterTypeRegistry()
+  private readonly undefinedParameterTypes: Map<string, Set<string>> = new Map()
+  private readonly parameterTypes: Array<WithId<NewParameterType>> = []
+  private readonly steps: Array<WithId<NewStep>> = []
+  private readonly beforeHooks: Array<WithId<NewHook>> = []
+  private readonly afterHooks: Array<WithId<NewHook>> = []
+
+  constructor(private readonly newId: () => string) {}
+
+  parameterType(options: NewParameterType) {
+    this.parameterTypes.push({
+      id: this.newId(),
+      ...options,
+    })
+    return this
+  }
+
+  beforeHook(options: NewHook) {
+    this.beforeHooks.push({
+      id: this.newId(),
+      ...options,
+    })
+    return this
+  }
+
+  afterHook(options: NewHook) {
+    this.afterHooks.push({
+      id: this.newId(),
+      ...options,
+    })
+    return this
+  }
+
+  step(options: NewStep) {
+    this.steps.push({
+      id: this.newId(),
+      ...options,
+    })
+    return this
+  }
+
+  private buildParameterTypes(): ReadonlyArray<DefinedParameterType> {
+    return this.parameterTypes.map((registered) => {
+      const parameterType = new ParameterType(
+        registered.name,
+        registered.regexp,
+        null,
+        registered.transformer,
+        registered.useForSnippets ?? true,
+        registered.preferForRegexpMatch ?? false
+      )
+      this.parameterTypeRegistry.defineParameterType(parameterType)
+      return {
+        id: registered.id,
+        name: registered.name,
+        regularExpressions: [...parameterType.regexpStrings],
+        preferForRegularExpressionMatch: parameterType.preferForRegexpMatch as boolean,
+        useForSnippets: parameterType.useForSnippets as boolean,
+        sourceReference: registered.sourceReference,
+      }
+    })
+  }
+
+  private buildSteps(): ReadonlyArray<DefinedStep> {
+    return this.steps
+      .map(({ id, pattern, fn, sourceReference }) => {
+        const compiled = this.compileExpression(pattern)
+        if (!compiled) {
+          return undefined
+        }
+        return {
+          id,
+          expression: {
+            raw: pattern,
+            compiled,
+          },
+          fn,
+          sourceReference,
+          toMessage() {
+            return {
+              id,
+              pattern: {
+                type:
+                  this.expression.compiled instanceof CucumberExpression
+                    ? StepDefinitionPatternType.CUCUMBER_EXPRESSION
+                    : StepDefinitionPatternType.REGULAR_EXPRESSION,
+                source: pattern.toString(),
+              },
+              sourceReference,
+            }
+          },
+        }
+      })
+      .filter((step) => !!step)
+  }
+
+  private compileExpression(
+    text: string | RegExp
+  ): CucumberExpression | RegularExpression | undefined {
+    if (typeof text === 'string') {
+      return this.compileCucumberExpression(text)
+    }
+    return new RegularExpression(text, this.parameterTypeRegistry)
+  }
+
+  private compileCucumberExpression(text: string): CucumberExpression | undefined {
+    try {
+      return new CucumberExpression(text, this.parameterTypeRegistry)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: any) {
+      if ('undefinedParameterTypeName' in e) {
+        if (!this.undefinedParameterTypes.has(e.undefinedParameterTypeName)) {
+          this.undefinedParameterTypes.set(e.undefinedParameterTypeName, new Set())
+        }
+        this.undefinedParameterTypes.get(e.undefinedParameterTypeName)?.add(text.toString())
+        return undefined
+      } else {
+        throw e
+      }
+    }
+  }
+
+  private buildUndefinedParameterTypes(): ReadonlyArray<UndefinedParameterType> {
+    return [...this.undefinedParameterTypes.entries()]
+      .map(([name, expressions]) => {
+        return [...expressions].map((expression) => ({ name, expression }))
+      })
+      .flat()
+  }
+
+  private buildBeforeHooks(): ReadonlyArray<DefinedHook> {
+    return this.beforeHooks.map(({ id, name, tags, fn, sourceReference }) => {
+      return {
+        id,
+        name,
+        tags: tags
+          ? {
+              raw: tags,
+              compiled: parse(tags),
+            }
+          : undefined,
+        fn,
+        sourceReference,
+        toMessage() {
+          return {
+            id,
+            type: HookType.BEFORE_TEST_CASE,
+            name,
+            tagExpression: this.tags?.raw,
+            sourceReference,
+          }
+        },
+      }
+    })
+  }
+
+  private buildAfterHooks(): ReadonlyArray<DefinedHook> {
+    return this.afterHooks.map(({ id, name, tags, fn, sourceReference }) => {
+      return {
+        id,
+        name,
+        tags: tags
+          ? {
+              raw: tags,
+              compiled: parse(tags),
+            }
+          : undefined,
+        fn,
+        sourceReference,
+        toMessage() {
+          return {
+            id,
+            type: HookType.AFTER_TEST_CASE,
+            name,
+            tagExpression: this.tags?.raw,
+            sourceReference,
+          }
+        },
+      }
+    })
+  }
+
+  build() {
+    return new SupportCodeLibraryImpl(
+      this.buildParameterTypes(),
+      this.buildSteps(),
+      this.buildUndefinedParameterTypes(),
+      this.buildBeforeHooks(),
+      this.buildAfterHooks()
+    )
+  }
+}
