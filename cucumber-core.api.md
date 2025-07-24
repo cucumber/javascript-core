@@ -170,6 +170,7 @@ export interface TestPlanIngredients {
     gherkinDocument: GherkinDocument;
     pickles: ReadonlyArray<Pickle>;
     supportCodeLibrary: SupportCodeLibrary;
+    testRunStartedId: string;
 }
 
 // @public
