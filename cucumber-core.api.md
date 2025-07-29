@@ -25,22 +25,10 @@ export class AmbiguousError extends Error {
 }
 
 // @public
-export interface AssembledStep {
-    always: boolean;
-    id: string;
-    name: {
-        prefix: string;
-        body: string;
-    };
-    prepare(thisArg?: unknown): PreparedFunction;
-    toMessage(): TestStep;
-}
-
-// @public
 export interface AssembledTestCase {
     id: string;
     name: string;
-    steps: ReadonlyArray<AssembledStep>;
+    testSteps: ReadonlyArray<AssembledTestStep>;
     toMessage(): TestCase;
 }
 
@@ -49,6 +37,18 @@ export interface AssembledTestPlan {
     name?: string;
     testCases: ReadonlyArray<AssembledTestCase>;
     toEnvelopes(): ReadonlyArray<Envelope>;
+}
+
+// @public
+export interface AssembledTestStep {
+    always: boolean;
+    id: string;
+    name: {
+        prefix: string;
+        body: string;
+    };
+    prepare(thisArg?: unknown): PreparedFunction;
+    toMessage(): TestStep;
 }
 
 // @public

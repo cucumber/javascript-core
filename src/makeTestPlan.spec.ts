@@ -154,7 +154,7 @@ describe('makeTestPlan', () => {
         }
       )
 
-      expect(() => result.testCases[0].steps[0].prepare(undefined)).to.throw(AmbiguousError)
+      expect(() => result.testCases[0].testSteps[0].prepare(undefined)).to.throw(AmbiguousError)
     })
 
     it('throws if a step is undefined', () => {
@@ -168,7 +168,7 @@ describe('makeTestPlan', () => {
         }
       )
 
-      expect(() => result.testCases[0].steps[0].prepare(undefined)).to.throw(UndefinedError)
+      expect(() => result.testCases[0].testSteps[0].prepare(undefined)).to.throw(UndefinedError)
     })
 
     it('matches and prepares a step without parameters', () => {
@@ -194,7 +194,7 @@ describe('makeTestPlan', () => {
       )
 
       const fakeWorld = new FakeWorld()
-      const prepared = result.testCases[0].steps[0].prepare(fakeWorld)
+      const prepared = result.testCases[0].testSteps[0].prepare(fakeWorld)
       expect(prepared.args).to.deep.eq([])
       prepared.fn()
       expect(fn).to.have.been.calledWithExactly()
@@ -224,7 +224,7 @@ describe('makeTestPlan', () => {
       )
 
       const fakeWorld = new FakeWorld()
-      const prepared = result.testCases[0].steps[0].prepare(fakeWorld)
+      const prepared = result.testCases[0].testSteps[0].prepare(fakeWorld)
       expect(prepared.args).to.deep.eq([4, 5])
       prepared.fn(...prepared.args)
       expect(fn).to.have.been.calledWithExactly(...prepared.args)
@@ -254,7 +254,7 @@ describe('makeTestPlan', () => {
       )
 
       const fakeWorld = new FakeWorld()
-      const prepared = result.testCases[0].steps[0].prepare(fakeWorld)
+      const prepared = result.testCases[0].testSteps[0].prepare(fakeWorld)
       expect(prepared.args).to.deep.eq([
         new DataTable([
           ['a', 'b', 'c'],
@@ -289,7 +289,7 @@ describe('makeTestPlan', () => {
       )
 
       const fakeWorld = new FakeWorld()
-      const prepared = result.testCases[0].steps[0].prepare(fakeWorld)
+      const prepared = result.testCases[0].testSteps[0].prepare(fakeWorld)
       expect(prepared.args).to.deep.eq(['Hello world'])
       prepared.fn(...prepared.args)
       expect(fn).to.have.been.calledWithExactly(...prepared.args)
@@ -335,7 +335,7 @@ describe('makeTestPlan', () => {
         }
       )
 
-      expect(result.testCases[0].steps.map((step) => step.name)).to.deep.eq([
+      expect(result.testCases[0].testSteps.map((step) => step.name)).to.deep.eq([
         // Before hooks in definition order
         { prefix: 'Before', body: 'setup 1' },
         { prefix: 'Before', body: 'setup 2' },
@@ -386,7 +386,7 @@ describe('makeTestPlan', () => {
         }
       )
 
-      expect(result.testCases[0].steps.map((step) => step.always)).to.deep.eq([
+      expect(result.testCases[0].testSteps.map((step) => step.always)).to.deep.eq([
         // Before hooks
         false,
         false,
@@ -452,7 +452,7 @@ describe('makeTestPlan', () => {
         }
       )
 
-      expect(result.testCases[0].steps.map((step) => step.name)).to.deep.eq([
+      expect(result.testCases[0].testSteps.map((step) => step.name)).to.deep.eq([
         // Before hooks matched
         { prefix: 'Before', body: 'general setup' },
         { prefix: 'Before', body: 'foo-only setup' },
@@ -493,7 +493,7 @@ describe('makeTestPlan', () => {
       )
 
       const fakeWorld = new FakeWorld()
-      const prepared = result.testCases[0].steps[0].prepare(fakeWorld)
+      const prepared = result.testCases[0].testSteps[0].prepare(fakeWorld)
       expect(prepared.args).to.deep.eq([])
       prepared.fn()
       expect(fn).to.have.been.calledWithExactly()
@@ -527,7 +527,7 @@ describe('makeTestPlan', () => {
       )
 
       const fakeWorld = new FakeWorld()
-      const prepared = result.testCases[0].steps[3].prepare(fakeWorld)
+      const prepared = result.testCases[0].testSteps[3].prepare(fakeWorld)
       expect(prepared.args).to.deep.eq([])
       prepared.fn()
       expect(fn).to.have.been.calledWithExactly()
