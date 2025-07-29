@@ -28,6 +28,7 @@ export class AmbiguousError extends Error {
 export interface AssembledTestCase {
     id: string;
     name: string;
+    sourceReference: SourceReference;
     testSteps: ReadonlyArray<AssembledTestStep>;
     toMessage(): TestCase;
 }
@@ -48,6 +49,7 @@ export interface AssembledTestStep {
         body: string;
     };
     prepare(thisArg?: unknown): PreparedFunction;
+    sourceReference: SourceReference;
     toMessage(): TestStep;
 }
 

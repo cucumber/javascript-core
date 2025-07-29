@@ -535,6 +535,54 @@ describe('makeTestPlan', () => {
     })
   })
 
+  describe('source references', () => {
+    it('includes correct source references with test cases and test steps', () => {
+      const { gherkinDocument, pickles } = parseGherkin('minimal.feature', newId)
+      const supportCodeLibrary = buildSupportCode({ newId })
+        .beforeHook({
+          fn: sinon.stub(),
+          sourceReference: { uri: 'hooks.js', location: { line: 1, column: 1 } },
+        })
+        .step({
+          pattern: 'a step',
+          fn: sinon.stub(),
+          sourceReference: { uri: 'steps.js', location: { line: 1, column: 1 } },
+        })
+        .build()
+
+      const result = makeTestPlan(
+        { testRunStartedId, gherkinDocument, pickles, supportCodeLibrary },
+        {
+          newId,
+        }
+      )
+      // sourceReference on test case is for scenario/example
+      expect(result.testCases[0].sourceReference).to.deep.eq({
+        uri: 'features/minimal.feature',
+        location: {
+          line: 2,
+          column: 3,
+        },
+      })
+      // sourceReference on hook step is for the scenario/example
+      expect(result.testCases[0].testSteps[0].sourceReference).to.deep.eq({
+        uri: 'features/minimal.feature',
+        location: {
+          line: 2,
+          column: 3,
+        },
+      })
+      // sourceReference on pickle step is for the gherkin step
+      expect(result.testCases[0].testSteps[1].sourceReference).to.deep.eq({
+        uri: 'features/minimal.feature',
+        location: {
+          line: 3,
+          column: 5,
+        },
+      })
+    })
+  })
+
   describe('messages', () => {
     it('produces the correct envelopes', () => {
       const { gherkinDocument, pickles } = parseGherkin('parameters.feature', newId)

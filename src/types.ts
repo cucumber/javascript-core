@@ -366,6 +366,13 @@ export interface AssembledTestStep {
     body: string
   }
   /**
+   * A reference to the source of this test step in the Gherkin document
+   * @remarks
+   * For pickle steps, this will be the line the step is on. For hook steps,
+   * this will be the line the pickle is on.
+   */
+  sourceReference: SourceReference
+  /**
    * Whether this test step should always be executed even if preceding ones fail
    */
   always: boolean
@@ -399,6 +406,10 @@ export interface AssembledTestCase {
    * This could vary depending on the supplied naming strategy.
    */
   name: string
+  /**
+   * A reference to the source of this test case in the Gherkin document
+   */
+  sourceReference: SourceReference
   /**
    * An ordered array of test steps to be executed for this test case
    */

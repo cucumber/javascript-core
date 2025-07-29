@@ -3,6 +3,7 @@ import {
   GherkinDocument,
   Group as MessagesGroup,
   IdGenerator,
+  Location as MessagesLocation,
   Pickle,
   Step,
 } from '@cucumber/messages'
@@ -48,13 +49,18 @@ export function makeTestPlan(
     name: gherkinDocument.feature?.name || gherkinDocument.uri,
     testCases: pickles.map((pickle) => {
       const lineage = query.findLineageBy(pickle) as Lineage
+      const location = query.findLocationOf(pickle) as MessagesLocation
       return {
         id: newId(),
         name: strategy.reduce(lineage, pickle),
+        sourceReference: {
+          uri: pickle.uri,
+          location,
+        },
         testSteps: [
-          ...fromBeforeHooks(pickle, supportCodeLibrary, newId),
+          ...fromBeforeHooks(pickle, location, supportCodeLibrary, newId),
           ...fromPickleSteps(pickle, supportCodeLibrary, newId, query),
-          ...fromAfterHooks(pickle, supportCodeLibrary, newId),
+          ...fromAfterHooks(pickle, location, supportCodeLibrary, newId),
         ],
         toMessage() {
           return {
@@ -81,6 +87,7 @@ function populateQuery(gherkinDocument: GherkinDocument, pickles: ReadonlyArray<
 
 function fromBeforeHooks(
   pickle: Pickle,
+  location: MessagesLocation,
   supportCodeLibrary: SupportCodeLibrary,
   newId: () => string
 ): ReadonlyArray<AssembledTestStep> {
@@ -90,6 +97,10 @@ function fromBeforeHooks(
       name: {
         prefix: 'Before',
         body: def.name ?? '',
+      },
+      sourceReference: {
+        uri: pickle.uri,
+        location,
       },
       always: false,
       prepare(thisArg) {
@@ -110,6 +121,7 @@ function fromBeforeHooks(
 
 function fromAfterHooks(
   pickle: Pickle,
+  location: MessagesLocation,
   supportCodeLibrary: SupportCodeLibrary,
   newId: () => string
 ): ReadonlyArray<AssembledTestStep> {
@@ -122,6 +134,10 @@ function fromAfterHooks(
         name: {
           prefix: 'After',
           body: def.name ?? '',
+        },
+        sourceReference: {
+          uri: pickle.uri,
+          location,
         },
         always: true,
         prepare(thisArg) {
@@ -154,6 +170,10 @@ function fromPickleSteps(
       name: {
         prefix: step.keyword.trim(),
         body: pickleStep.text,
+      },
+      sourceReference: {
+        uri: pickle.uri,
+        location: step.location,
       },
       always: false,
       prepare(thisArg) {
