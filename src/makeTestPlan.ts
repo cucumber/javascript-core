@@ -3,6 +3,7 @@ import {
   GherkinDocument,
   Group as MessagesGroup,
   IdGenerator,
+  Location as MessagesLocation,
   Pickle,
   Step,
 } from '@cucumber/messages'
@@ -18,8 +19,8 @@ import {
 import { AmbiguousError } from './AmbiguousError'
 import { DataTable } from './DataTable'
 import {
-  AssembledStep,
   AssembledTestPlan,
+  AssembledTestStep,
   SupportCodeLibrary,
   TestPlanIngredients,
   TestPlanOptions,
@@ -48,19 +49,24 @@ export function makeTestPlan(
     name: gherkinDocument.feature?.name || gherkinDocument.uri,
     testCases: pickles.map((pickle) => {
       const lineage = query.findLineageBy(pickle) as Lineage
+      const location = query.findLocationOf(pickle) as MessagesLocation
       return {
         id: newId(),
         name: strategy.reduce(lineage, pickle),
-        steps: [
-          ...fromBeforeHooks(pickle, supportCodeLibrary, newId),
+        sourceReference: {
+          uri: pickle.uri,
+          location,
+        },
+        testSteps: [
+          ...fromBeforeHooks(pickle, location, supportCodeLibrary, newId),
           ...fromPickleSteps(pickle, supportCodeLibrary, newId, query),
-          ...fromAfterHooks(pickle, supportCodeLibrary, newId),
+          ...fromAfterHooks(pickle, location, supportCodeLibrary, newId),
         ],
         toMessage() {
           return {
             id: this.id,
             pickleId: pickle.id,
-            testSteps: this.steps.map((step) => step.toMessage()),
+            testSteps: this.testSteps.map((step) => step.toMessage()),
             testRunStartedId,
           }
         },
@@ -81,15 +87,20 @@ function populateQuery(gherkinDocument: GherkinDocument, pickles: ReadonlyArray<
 
 function fromBeforeHooks(
   pickle: Pickle,
+  location: MessagesLocation,
   supportCodeLibrary: SupportCodeLibrary,
   newId: () => string
-): ReadonlyArray<AssembledStep> {
+): ReadonlyArray<AssembledTestStep> {
   return supportCodeLibrary.findAllBeforeHooksBy(pickle.tags.map((tag) => tag.name)).map((def) => {
     return {
       id: newId(),
       name: {
         prefix: 'Before',
         body: def.name ?? '',
+      },
+      sourceReference: {
+        uri: pickle.uri,
+        location,
       },
       always: false,
       prepare(thisArg) {
@@ -110,9 +121,10 @@ function fromBeforeHooks(
 
 function fromAfterHooks(
   pickle: Pickle,
+  location: MessagesLocation,
   supportCodeLibrary: SupportCodeLibrary,
   newId: () => string
-): ReadonlyArray<AssembledStep> {
+): ReadonlyArray<AssembledTestStep> {
   return supportCodeLibrary
     .findAllAfterHooksBy(pickle.tags.map((tag) => tag.name))
     .toReversed()
@@ -122,6 +134,10 @@ function fromAfterHooks(
         name: {
           prefix: 'After',
           body: def.name ?? '',
+        },
+        sourceReference: {
+          uri: pickle.uri,
+          location,
         },
         always: true,
         prepare(thisArg) {
@@ -145,7 +161,7 @@ function fromPickleSteps(
   supportCodeLibrary: SupportCodeLibrary,
   newId: () => string,
   query: Query
-): ReadonlyArray<AssembledStep> {
+): ReadonlyArray<AssembledTestStep> {
   return pickle.steps.map((pickleStep) => {
     const step = query.findStepBy(pickleStep) as Step
     const matched = supportCodeLibrary.findAllStepsBy(pickleStep.text)
@@ -154,6 +170,10 @@ function fromPickleSteps(
       name: {
         prefix: step.keyword.trim(),
         body: pickleStep.text,
+      },
+      sourceReference: {
+        uri: pickle.uri,
+        location: step.location,
       },
       always: false,
       prepare(thisArg) {

@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Add `sourceReference` to test cases and test steps in plan ([#5](https://github.com/cucumber/javascript-core/pull/5))
+
+### Changed
+- BREAKING CHANGE: Rename `AssembledStep` to `AssembledTestStep` ([#5](https://github.com/cucumber/javascript-core/pull/5))
 
 ## [0.2.1] - 2025-07-24
 ### Fixed

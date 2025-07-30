@@ -350,27 +350,34 @@ export type PreparedFunction = {
 }
 
 /**
- * A step that belongs to an {@link AssembledTestCase}
+ * A test step that belongs to an {@link AssembledTestCase}
  * @public
  */
-export interface AssembledStep {
+export interface AssembledTestStep {
   /**
-   * A unique identifier for this step
+   * A unique identifier for this test step
    */
   id: string
   /**
-   * A non-unique name for this step
+   * A non-unique name for this test step
    */
   name: {
     prefix: string
     body: string
   }
   /**
-   * Whether this step should always be executed even if preceding steps fail
+   * A reference to the source of this test step in the Gherkin document
+   * @remarks
+   * For pickle steps, this will be the line the step is on. For hook steps,
+   * this will be the line the pickle is on.
+   */
+  sourceReference: SourceReference
+  /**
+   * Whether this test step should always be executed even if preceding ones fail
    */
   always: boolean
   /**
-   * Prepare the step for execution and return the prepared function and arguments
+   * Prepare the test step for execution and return the prepared function and arguments
    * @param thisArg - the value to bound as `this` on the function
    * @remarks
    * For pickle steps, preparation includes finding matching step definitions from
@@ -400,9 +407,13 @@ export interface AssembledTestCase {
    */
   name: string
   /**
-   * An ordered array of steps to be executed for this test case
+   * A reference to the source of this test case in the Gherkin document
    */
-  steps: ReadonlyArray<AssembledStep>
+  sourceReference: SourceReference
+  /**
+   * An ordered array of test steps to be executed for this test case
+   */
+  testSteps: ReadonlyArray<AssembledTestStep>
   /**
    * Converts the test case to a TestCase message
    */
