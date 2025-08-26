@@ -9,12 +9,14 @@ import parse from '@cucumber/tag-expressions'
 
 import { SupportCodeLibraryImpl } from './SupportCodeLibraryImpl'
 import {
-  DefinedHook,
   DefinedParameterType,
   DefinedStep,
-  NewHook,
+  DefinedTestCaseHook,
+  DefinedTestRunHook,
   NewParameterType,
   NewStep,
+  NewTestCaseHook,
+  NewTestRunHook,
   SupportCodeBuilder,
   UndefinedParameterType,
 } from './types'
@@ -29,8 +31,10 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
   private readonly undefinedParameterTypes: Map<string, Set<string>> = new Map()
   private readonly parameterTypes: Array<WithId<NewParameterType>> = []
   private readonly steps: Array<WithId<NewStep>> = []
-  private readonly beforeHooks: Array<WithId<NewHook>> = []
-  private readonly afterHooks: Array<WithId<NewHook>> = []
+  private readonly beforeHooks: Array<WithId<NewTestCaseHook>> = []
+  private readonly afterHooks: Array<WithId<NewTestCaseHook>> = []
+  private readonly beforeAllHooks: Array<WithId<NewTestRunHook>> = []
+  private readonly afterAllHooks: Array<WithId<NewTestRunHook>> = []
 
   constructor(private readonly newId: () => string) {}
 
@@ -42,7 +46,7 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
     return this
   }
 
-  beforeHook(options: NewHook) {
+  beforeHook(options: NewTestCaseHook) {
     this.beforeHooks.push({
       id: this.newId(),
       ...options,
@@ -50,7 +54,7 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
     return this
   }
 
-  afterHook(options: NewHook) {
+  afterHook(options: NewTestCaseHook) {
     this.afterHooks.push({
       id: this.newId(),
       ...options,
@@ -60,6 +64,22 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
 
   step(options: NewStep) {
     this.steps.push({
+      id: this.newId(),
+      ...options,
+    })
+    return this
+  }
+
+  beforeAllHook(options: NewTestRunHook) {
+    this.beforeAllHooks.push({
+      id: this.newId(),
+      ...options,
+    })
+    return this
+  }
+
+  afterAllHook(options: NewTestRunHook) {
+    this.afterAllHooks.push({
       id: this.newId(),
       ...options,
     })
@@ -155,7 +175,7 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
       .flat()
   }
 
-  private buildBeforeHooks(): ReadonlyArray<DefinedHook> {
+  private buildBeforeHooks(): ReadonlyArray<DefinedTestCaseHook> {
     return this.beforeHooks.map(({ id, name, tags, fn, sourceReference }) => {
       return {
         id,
@@ -181,7 +201,7 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
     })
   }
 
-  private buildAfterHooks(): ReadonlyArray<DefinedHook> {
+  private buildAfterHooks(): ReadonlyArray<DefinedTestCaseHook> {
     return this.afterHooks.map(({ id, name, tags, fn, sourceReference }) => {
       return {
         id,
@@ -207,13 +227,53 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
     })
   }
 
+  private buildBeforeAllHooks(): ReadonlyArray<DefinedTestRunHook> {
+    return this.beforeAllHooks.map(({ id, name, fn, sourceReference }) => {
+      return {
+        id,
+        name,
+        fn,
+        sourceReference,
+        toMessage() {
+          return {
+            id,
+            type: HookType.BEFORE_TEST_RUN,
+            name,
+            sourceReference,
+          }
+        },
+      }
+    })
+  }
+
+  private buildAfterAllHooks(): ReadonlyArray<DefinedTestRunHook> {
+    return this.afterAllHooks.map(({ id, name, fn, sourceReference }) => {
+      return {
+        id,
+        name,
+        fn,
+        sourceReference,
+        toMessage() {
+          return {
+            id,
+            type: HookType.AFTER_TEST_RUN,
+            name,
+            sourceReference,
+          }
+        },
+      }
+    })
+  }
+
   build() {
     return new SupportCodeLibraryImpl(
       this.buildParameterTypes(),
       this.buildSteps(),
       this.buildUndefinedParameterTypes(),
       this.buildBeforeHooks(),
-      this.buildAfterHooks()
+      this.buildAfterHooks(),
+      this.buildBeforeAllHooks(),
+      this.buildAfterAllHooks()
     )
   }
 }

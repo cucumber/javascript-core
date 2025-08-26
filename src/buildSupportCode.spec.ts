@@ -13,7 +13,7 @@ describe('buildSupportCode', () => {
     newId = IdGenerator.incrementing()
   })
 
-  describe('hooks', () => {
+  describe('test case hooks', () => {
     let library: SupportCodeLibrary
     beforeEach(() => {
       library = buildSupportCode({ newId: IdGenerator.incrementing() })
@@ -296,6 +296,85 @@ describe('buildSupportCode', () => {
               },
               uri: 'steps.js',
             },
+          },
+        },
+      ])
+    })
+  })
+
+  describe('test run hooks', () => {
+    let library: SupportCodeLibrary
+    beforeEach(() => {
+      library = buildSupportCode({ newId: IdGenerator.incrementing() })
+        .beforeAllHook({
+          name: 'setup 1',
+          fn: sinon.stub(),
+          sourceReference: { uri: 'hooks.js', location: { line: 1, column: 1 } },
+        })
+        .beforeAllHook({
+          name: 'setup 2',
+          fn: sinon.stub(),
+          sourceReference: { uri: 'hooks.js', location: { line: 2, column: 1 } },
+        })
+        .afterAllHook({
+          name: 'teardown 1',
+          fn: sinon.stub(),
+          sourceReference: { uri: 'hooks.js', location: { line: 3, column: 1 } },
+        })
+        .afterAllHook({
+          name: 'teardown 2',
+          fn: sinon.stub(),
+          sourceReference: { uri: 'hooks.js', location: { line: 4, column: 1 } },
+        })
+        .build()
+    })
+
+    it('gets just before all hooks', () => {
+      expect(library.getAllBeforeAllHooks().map((hook) => hook.name)).to.deep.eq([
+        'setup 1',
+        'setup 2',
+      ])
+    })
+
+    it('gets just after all hooks', () => {
+      expect(library.getAllAfterAllHooks().map((hook) => hook.name)).to.deep.eq([
+        'teardown 1',
+        'teardown 2',
+      ])
+    })
+
+    it('produces correct envelopes', () => {
+      expect(library.toEnvelopes()).to.deep.eq([
+        {
+          hook: {
+            id: '0',
+            type: 'BEFORE_TEST_RUN',
+            name: 'setup 1',
+            sourceReference: { uri: 'hooks.js', location: { line: 1, column: 1 } },
+          },
+        },
+        {
+          hook: {
+            id: '1',
+            type: 'BEFORE_TEST_RUN',
+            name: 'setup 2',
+            sourceReference: { uri: 'hooks.js', location: { line: 2, column: 1 } },
+          },
+        },
+        {
+          hook: {
+            id: '2',
+            type: 'AFTER_TEST_RUN',
+            name: 'teardown 1',
+            sourceReference: { uri: 'hooks.js', location: { line: 3, column: 1 } },
+          },
+        },
+        {
+          hook: {
+            id: '3',
+            type: 'AFTER_TEST_RUN',
+            name: 'teardown 2',
+            sourceReference: { uri: 'hooks.js', location: { line: 4, column: 1 } },
           },
         },
       ])

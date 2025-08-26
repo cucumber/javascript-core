@@ -68,19 +68,6 @@ export class DataTable {
 }
 
 // @public
-export type DefinedHook = {
-    id: string;
-    name?: string;
-    tags?: {
-        raw: string;
-        compiled: ReturnType<typeof parse>;
-    };
-    fn: SupportCodeFunction;
-    sourceReference: SourceReference;
-    toMessage(): Hook;
-};
-
-// @public
 export type DefinedParameterType = {
     id: string;
     name: string;
@@ -103,6 +90,28 @@ export type DefinedStep = {
 };
 
 // @public
+export type DefinedTestCaseHook = {
+    id: string;
+    name?: string;
+    tags?: {
+        raw: string;
+        compiled: ReturnType<typeof parse>;
+    };
+    fn: SupportCodeFunction;
+    sourceReference: SourceReference;
+    toMessage(): Hook;
+};
+
+// @public
+export type DefinedTestRunHook = {
+    id: string;
+    name?: string;
+    fn: SupportCodeFunction;
+    sourceReference: SourceReference;
+    toMessage(): Hook;
+};
+
+// @public
 export function makeTestPlan(ingredients: TestPlanIngredients, options?: TestPlanOptions): AssembledTestPlan;
 
 // @public
@@ -110,14 +119,6 @@ export type MatchedStep = {
     def: DefinedStep;
     args: ReadonlyArray<Argument>;
 };
-
-// @public
-export interface NewHook {
-    fn: SupportCodeFunction;
-    name?: string;
-    sourceReference: SourceReference;
-    tags?: string;
-}
 
 // @public
 export interface NewParameterType {
@@ -137,6 +138,21 @@ export interface NewStep {
 }
 
 // @public
+export interface NewTestCaseHook {
+    fn: SupportCodeFunction;
+    name?: string;
+    sourceReference: SourceReference;
+    tags?: string;
+}
+
+// @public
+export interface NewTestRunHook {
+    fn: SupportCodeFunction;
+    name?: string;
+    sourceReference: SourceReference;
+}
+
+// @public
 export type PreparedFunction = {
     fn: SupportCodeFunction;
     args: ReadonlyArray<unknown>;
@@ -144,8 +160,10 @@ export type PreparedFunction = {
 
 // @public
 export interface SupportCodeBuilder {
-    afterHook(options: NewHook): SupportCodeBuilder;
-    beforeHook(options: NewHook): SupportCodeBuilder;
+    afterAllHook(options: NewTestRunHook): SupportCodeBuilder;
+    afterHook(options: NewTestCaseHook): SupportCodeBuilder;
+    beforeAllHook(options: NewTestRunHook): SupportCodeBuilder;
+    beforeHook(options: NewTestCaseHook): SupportCodeBuilder;
     build(): SupportCodeLibrary;
     parameterType(options: NewParameterType): SupportCodeBuilder;
     step(options: NewStep): SupportCodeBuilder;
@@ -156,9 +174,11 @@ export type SupportCodeFunction = (...args: any[]) => any | Promise<any>;
 
 // @public
 export interface SupportCodeLibrary {
-    findAllAfterHooksBy(tags: ReadonlyArray<string>): ReadonlyArray<DefinedHook>;
-    findAllBeforeHooksBy(tags: ReadonlyArray<string>): ReadonlyArray<DefinedHook>;
+    findAllAfterHooksBy(tags: ReadonlyArray<string>): ReadonlyArray<DefinedTestCaseHook>;
+    findAllBeforeHooksBy(tags: ReadonlyArray<string>): ReadonlyArray<DefinedTestCaseHook>;
     findAllStepsBy(text: string): ReadonlyArray<MatchedStep>;
+    getAllAfterAllHooks(): ReadonlyArray<DefinedTestRunHook>;
+    getAllBeforeAllHooks(): ReadonlyArray<DefinedTestRunHook>;
     toEnvelopes(): ReadonlyArray<Envelope>;
 }
 

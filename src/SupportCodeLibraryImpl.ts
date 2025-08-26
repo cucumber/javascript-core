@@ -1,7 +1,8 @@
 import {
-  DefinedHook,
   DefinedParameterType,
   DefinedStep,
+  DefinedTestCaseHook,
+  DefinedTestRunHook,
   MatchedStep,
   SupportCodeLibrary,
   UndefinedParameterType,
@@ -15,8 +16,10 @@ export class SupportCodeLibraryImpl implements SupportCodeLibrary {
     private readonly parameterTypes: ReadonlyArray<DefinedParameterType> = [],
     private readonly steps: ReadonlyArray<DefinedStep> = [],
     private readonly undefinedParameterTypes: ReadonlyArray<UndefinedParameterType> = [],
-    private readonly beforeHooks: ReadonlyArray<DefinedHook> = [],
-    private readonly afterHooks: ReadonlyArray<DefinedHook> = []
+    private readonly beforeHooks: ReadonlyArray<DefinedTestCaseHook> = [],
+    private readonly afterHooks: ReadonlyArray<DefinedTestCaseHook> = [],
+    private readonly beforeAllHooks: ReadonlyArray<DefinedTestRunHook> = [],
+    private readonly afterAllHooks: ReadonlyArray<DefinedTestRunHook> = []
   ) {}
 
   findAllStepsBy(text: string) {
@@ -51,6 +54,14 @@ export class SupportCodeLibraryImpl implements SupportCodeLibrary {
     })
   }
 
+  getAllBeforeAllHooks(): ReadonlyArray<DefinedTestRunHook> {
+    return [...this.beforeAllHooks]
+  }
+
+  getAllAfterAllHooks(): ReadonlyArray<DefinedTestRunHook> {
+    return [...this.afterAllHooks]
+  }
+
   toEnvelopes() {
     return [
       ...this.parameterTypes.map((parameterType) => ({ parameterType })),
@@ -60,6 +71,10 @@ export class SupportCodeLibraryImpl implements SupportCodeLibrary {
       ...this.undefinedParameterTypes.map((undefinedParameterType) => ({ undefinedParameterType })),
       ...this.beforeHooks.map((definedHook) => definedHook.toMessage()).map((hook) => ({ hook })),
       ...this.afterHooks.map((definedHook) => definedHook.toMessage()).map((hook) => ({ hook })),
+      ...this.beforeAllHooks
+        .map((definedHook) => definedHook.toMessage())
+        .map((hook) => ({ hook })),
+      ...this.afterAllHooks.map((definedHook) => definedHook.toMessage()).map((hook) => ({ hook })),
     ]
   }
 }
