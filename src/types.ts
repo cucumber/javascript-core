@@ -71,10 +71,10 @@ export interface NewParameterType {
 }
 
 /**
- * Attributes for creating a new hook
+ * Attributes for creating a new test case hook
  * @public
  */
-export interface NewHook {
+export interface NewTestCaseHook {
   /**
    * Optional name for the hook
    */
@@ -105,6 +105,25 @@ export interface NewStep {
   pattern: string | RegExp
   /**
    * The user-defined function for the step
+   */
+  fn: SupportCodeFunction
+  /**
+   * A reference to the source code of the user-defined function
+   */
+  sourceReference: SourceReference
+}
+
+/**
+ * Attributes for creating a new test run hook
+ * @public
+ */
+export interface NewTestRunHook {
+  /**
+   * Optional name for the hook
+   */
+  name?: string
+  /**
+   * The user-defined function for the hook
    */
   fn: SupportCodeFunction
   /**
@@ -162,10 +181,10 @@ export type DefinedParameterType = {
 }
 
 /**
- * A hook that has been defined and is available for execution
+ * A test case hook that has been defined and is available for execution
  * @public
  */
-export type DefinedHook = {
+export type DefinedTestCaseHook = {
   /**
    * A unique identifier for the hook
    */
@@ -228,6 +247,33 @@ export type DefinedStep = {
 }
 
 /**
+ * A test run hook that has been defined and is available for execution
+ * @public
+ */
+export type DefinedTestRunHook = {
+  /**
+   * A unique identifier for the hook
+   */
+  id: string
+  /**
+   * The name of the hook, if defined
+   */
+  name?: string
+  /**
+   * The user-defined function for the hook
+   */
+  fn: SupportCodeFunction
+  /**
+   * A reference to the source code of the user-defined function
+   */
+  sourceReference: SourceReference
+  /**
+   * Creates a Cucumber Message representing this hook
+   */
+  toMessage(): Hook
+}
+
+/**
  * Builder for collecting user-defined support code
  * @public
  */
@@ -237,17 +283,25 @@ export interface SupportCodeBuilder {
    */
   parameterType(options: NewParameterType): SupportCodeBuilder
   /**
+   * Define a new before hook
+   */
+  beforeHook(options: NewTestCaseHook): SupportCodeBuilder
+  /**
+   * Define a new after hook
+   */
+  afterHook(options: NewTestCaseHook): SupportCodeBuilder
+  /**
    * Define a new step
    */
   step(options: NewStep): SupportCodeBuilder
   /**
-   * Define a new before hook
+   * Define a new before all hook
    */
-  beforeHook(options: NewHook): SupportCodeBuilder
+  beforeAllHook(options: NewTestRunHook): SupportCodeBuilder
   /**
-   * Define a new after hook
+   * Define a new after all hook
    */
-  afterHook(options: NewHook): SupportCodeBuilder
+  afterAllHook(options: NewTestRunHook): SupportCodeBuilder
   /**
    * Build and seal the support code library for use in {@link makeTestPlan}
    * @remarks
@@ -264,17 +318,25 @@ export interface SupportCodeLibrary {
   /**
    * Find all Before hooks that match the given tags
    */
-  findAllBeforeHooksBy(tags: ReadonlyArray<string>): ReadonlyArray<DefinedHook>
+  findAllBeforeHooksBy(tags: ReadonlyArray<string>): ReadonlyArray<DefinedTestCaseHook>
   /**
    * Find all After hooks that match the given tags
    * @remarks
    * Hooks are returned in definition order. For execution, the order should be reversed.
    */
-  findAllAfterHooksBy(tags: ReadonlyArray<string>): ReadonlyArray<DefinedHook>
+  findAllAfterHooksBy(tags: ReadonlyArray<string>): ReadonlyArray<DefinedTestCaseHook>
   /**
    * Find all step definitions whose expression is a match for the given text
    */
   findAllStepsBy(text: string): ReadonlyArray<MatchedStep>
+  /**
+   * Get all BeforeAll hooks
+   */
+  getAllBeforeAllHooks(): ReadonlyArray<DefinedTestRunHook>
+  /**
+   * Get all AfterAll hooks
+   */
+  getAllAfterAllHooks(): ReadonlyArray<DefinedTestRunHook>
   /**
    * Produces a list of Cucumber Messages envelopes for the support code
    */
