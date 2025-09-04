@@ -226,7 +226,7 @@ describe('buildSupportCode', () => {
           stepDefinition: {
             id: '0',
             pattern: {
-              source: '/there are (\\d+) widgets/',
+              source: 'there are (\\d+) widgets',
               type: StepDefinitionPatternType.REGULAR_EXPRESSION,
             },
             sourceReference: {

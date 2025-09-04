@@ -131,7 +131,7 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
                   this.expression.compiled instanceof CucumberExpression
                     ? StepDefinitionPatternType.CUCUMBER_EXPRESSION
                     : StepDefinitionPatternType.REGULAR_EXPRESSION,
-                source: pattern.toString(),
+                source: pattern instanceof RegExp ? pattern.source : pattern,
               },
               sourceReference,
             }
