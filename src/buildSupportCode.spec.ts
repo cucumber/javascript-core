@@ -240,6 +240,40 @@ describe('buildSupportCode', () => {
         },
       ])
     })
+
+    it('handles regular expressions with flags', () => {
+      const library = buildSupportCode({ newId })
+        .step({
+          pattern: /there are (\d+) widgets/i,
+          fn: sinon.stub(),
+          sourceReference: { uri: 'steps.js', location: { line: 1, column: 1 } },
+        })
+        .build()
+      const matchedSteps = library.findAllStepsBy('there ARE 17 widgets')
+
+      expect(matchedSteps.length).to.eq(1)
+      expect(matchedSteps[0].def.expression.compiled).to.be.instanceof(RegularExpression)
+      expect(matchedSteps[0].args.length).to.eq(1)
+      expect(matchedSteps[0].args[0].getValue(undefined)).to.eq(17)
+      expect(library.toEnvelopes()).to.deep.eq([
+        {
+          stepDefinition: {
+            id: '0',
+            pattern: {
+              source: '/there are (\\d+) widgets/i',
+              type: StepDefinitionPatternType.REGULAR_EXPRESSION,
+            },
+            sourceReference: {
+              location: {
+                column: 1,
+                line: 1,
+              },
+              uri: 'steps.js',
+            },
+          },
+        },
+      ])
+    })
   })
 
   describe('parameter types', () => {
