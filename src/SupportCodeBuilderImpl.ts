@@ -115,6 +115,7 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
         if (!compiled) {
           return undefined
         }
+        const source = this.extractPatternSource(pattern)
         return {
           id,
           expression: {
@@ -131,7 +132,7 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
                   this.expression.compiled instanceof CucumberExpression
                     ? StepDefinitionPatternType.CUCUMBER_EXPRESSION
                     : StepDefinitionPatternType.REGULAR_EXPRESSION,
-                source: pattern.toString(),
+                source,
               },
               sourceReference,
             }
@@ -139,6 +140,13 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
         }
       })
       .filter((step) => !!step)
+  }
+
+  private extractPatternSource(pattern: string | RegExp) {
+    if (pattern instanceof RegExp) {
+      return pattern.flags ? pattern.toString() : pattern.source
+    }
+    return pattern
   }
 
   private compileExpression(
