@@ -178,7 +178,7 @@ function fromPickleSteps(
       always: false,
       prepare(thisArg) {
         if (matched.length < 1) {
-          throw new UndefinedError(pickleStep.text)
+          throw new UndefinedError(pickleStep)
         } else if (matched.length > 1) {
           throw new AmbiguousError(
             pickleStep.text,

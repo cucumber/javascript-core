@@ -13,6 +13,7 @@ import { IdGenerator } from '@cucumber/messages';
 import { NamingStrategy } from '@cucumber/query';
 import parse from '@cucumber/tag-expressions';
 import { Pickle } from '@cucumber/messages';
+import { PickleStep } from '@cucumber/messages';
 import { RegularExpression } from '@cucumber/cucumber-expressions';
 import { SourceReference } from '@cucumber/messages';
 import { StepDefinition } from '@cucumber/messages';
@@ -203,7 +204,9 @@ export interface TestPlanOptions {
 
 // @public
 export class UndefinedError extends Error {
-    constructor(text: string);
+    constructor(pickleStep: PickleStep);
+    // (undocumented)
+    readonly pickleStep: PickleStep;
 }
 
 // @public
