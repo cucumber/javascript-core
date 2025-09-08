@@ -6,6 +6,7 @@
 
 import { Argument } from '@cucumber/cucumber-expressions';
 import { CucumberExpression } from '@cucumber/cucumber-expressions';
+import { CucumberExpressionGenerator } from '@cucumber/cucumber-expressions';
 import { Envelope } from '@cucumber/messages';
 import { GherkinDocument } from '@cucumber/messages';
 import { Hook } from '@cucumber/messages';
@@ -180,6 +181,7 @@ export interface SupportCodeLibrary {
     findAllStepsBy(text: string): ReadonlyArray<MatchedStep>;
     getAllAfterAllHooks(): ReadonlyArray<DefinedTestRunHook>;
     getAllBeforeAllHooks(): ReadonlyArray<DefinedTestRunHook>;
+    getExpressionGenerator(): CucumberExpressionGenerator;
     toEnvelopes(): ReadonlyArray<Envelope>;
 }
 
