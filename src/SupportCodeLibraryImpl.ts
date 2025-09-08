@@ -1,3 +1,5 @@
+import { CucumberExpressionGenerator, ParameterTypeRegistry } from '@cucumber/cucumber-expressions'
+
 import {
   DefinedParameterType,
   DefinedStep,
@@ -7,7 +9,6 @@ import {
   SupportCodeLibrary,
   UndefinedParameterType,
 } from './types'
-import { CucumberExpressionGenerator, ParameterTypeRegistry } from '@cucumber/cucumber-expressions'
 
 /**
  * @internal
