@@ -1,3 +1,5 @@
+import { CucumberExpressionGenerator, ParameterTypeRegistry } from '@cucumber/cucumber-expressions'
+
 import {
   DefinedParameterType,
   DefinedStep,
@@ -13,6 +15,7 @@ import {
  */
 export class SupportCodeLibraryImpl implements SupportCodeLibrary {
   constructor(
+    private readonly parameterTypeRegistry: ParameterTypeRegistry,
     private readonly parameterTypes: ReadonlyArray<DefinedParameterType> = [],
     private readonly steps: ReadonlyArray<DefinedStep> = [],
     private readonly undefinedParameterTypes: ReadonlyArray<UndefinedParameterType> = [],
@@ -34,6 +37,10 @@ export class SupportCodeLibraryImpl implements SupportCodeLibrary {
       }
     }
     return results
+  }
+
+  getExpressionGenerator(): CucumberExpressionGenerator {
+    return new CucumberExpressionGenerator(() => this.parameterTypeRegistry.parameterTypes)
   }
 
   findAllBeforeHooksBy(tags: ReadonlyArray<string>) {

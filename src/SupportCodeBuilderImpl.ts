@@ -275,6 +275,7 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
 
   build() {
     return new SupportCodeLibraryImpl(
+      this.parameterTypeRegistry,
       this.buildParameterTypes(),
       this.buildSteps(),
       this.buildUndefinedParameterTypes(),

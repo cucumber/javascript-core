@@ -336,6 +336,15 @@ describe('buildSupportCode', () => {
     })
   })
 
+  describe('expression generator', () => {
+    it('returns a cucumber expression generator primed with the parameter type registry', () => {
+      const library = buildSupportCode({ newId }).build()
+      const expressionGenerator = library.getExpressionGenerator()
+      const expressions = expressionGenerator.generateExpressions('I have 17 cukes in my belly')
+      expect(expressions.length).to.eq(2)
+    })
+  })
+
   describe('test run hooks', () => {
     let library: SupportCodeLibrary
     beforeEach(() => {

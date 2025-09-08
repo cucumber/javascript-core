@@ -6,6 +6,7 @@
 
 import { Argument } from '@cucumber/cucumber-expressions';
 import { CucumberExpression } from '@cucumber/cucumber-expressions';
+import { CucumberExpressionGenerator } from '@cucumber/cucumber-expressions';
 import { Envelope } from '@cucumber/messages';
 import { GherkinDocument } from '@cucumber/messages';
 import { Hook } from '@cucumber/messages';
@@ -13,6 +14,7 @@ import { IdGenerator } from '@cucumber/messages';
 import { NamingStrategy } from '@cucumber/query';
 import parse from '@cucumber/tag-expressions';
 import { Pickle } from '@cucumber/messages';
+import { PickleStep } from '@cucumber/messages';
 import { RegularExpression } from '@cucumber/cucumber-expressions';
 import { SourceReference } from '@cucumber/messages';
 import { StepDefinition } from '@cucumber/messages';
@@ -179,6 +181,7 @@ export interface SupportCodeLibrary {
     findAllStepsBy(text: string): ReadonlyArray<MatchedStep>;
     getAllAfterAllHooks(): ReadonlyArray<DefinedTestRunHook>;
     getAllBeforeAllHooks(): ReadonlyArray<DefinedTestRunHook>;
+    getExpressionGenerator(): CucumberExpressionGenerator;
     toEnvelopes(): ReadonlyArray<Envelope>;
 }
 
@@ -203,7 +206,9 @@ export interface TestPlanOptions {
 
 // @public
 export class UndefinedError extends Error {
-    constructor(text: string);
+    constructor(pickleStep: PickleStep);
+    // (undocumented)
+    readonly pickleStep: PickleStep;
 }
 
 // @public

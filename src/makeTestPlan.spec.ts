@@ -168,7 +168,12 @@ describe('makeTestPlan', () => {
         }
       )
 
-      expect(() => result.testCases[0].testSteps[0].prepare(undefined)).to.throw(UndefinedError)
+      try {
+        result.testCases[0].testSteps[0].prepare(undefined)
+      } catch (err: any) {
+        expect(err).to.be.instanceOf(UndefinedError)
+        expect(err.pickleStep).to.eq(pickles[0].steps[0])
+      }
     })
 
     it('matches and prepares a step without parameters', () => {
