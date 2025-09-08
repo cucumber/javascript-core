@@ -1,4 +1,9 @@
-import { Argument, CucumberExpression, RegularExpression } from '@cucumber/cucumber-expressions'
+import {
+  Argument,
+  CucumberExpression,
+  CucumberExpressionGenerator,
+  RegularExpression,
+} from '@cucumber/cucumber-expressions'
 import {
   Envelope,
   GherkinDocument,
@@ -329,6 +334,10 @@ export interface SupportCodeLibrary {
    * Find all step definitions whose expression is a match for the given text
    */
   findAllStepsBy(text: string): ReadonlyArray<MatchedStep>
+  /**
+   * Get a generator for Cucumber Expressions based on the currently defined parameter types
+   */
+  getExpressionGenerator(): CucumberExpressionGenerator
   /**
    * Get all BeforeAll hooks
    */
