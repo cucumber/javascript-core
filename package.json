@@ -17,7 +17,8 @@
     "exports:update": "api-extractor run --verbose --local",
     "fix": "eslint --max-warnings 0 src --fix && prettier --write src",
     "lint": "eslint --max-warnings 0 src && prettier --check src",
-    "test": "mocha \"src/**/*.spec.ts\""
+    "test": "mocha \"src/**/*.spec.ts\"",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
