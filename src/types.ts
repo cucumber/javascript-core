@@ -472,6 +472,10 @@ export interface AssembledTestCase {
    */
   id: string
   /**
+   * The id of the pickle from which this test case is derived
+   */
+  pickleId: string
+  /**
    * A non-unique name for this test case
    * @remarks
    * This could vary depending on the supplied naming strategy.

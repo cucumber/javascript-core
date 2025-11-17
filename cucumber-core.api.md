@@ -30,6 +30,7 @@ export class AmbiguousError extends Error {
 export interface AssembledTestCase {
     id: string;
     name: string;
+    pickleId: string;
     sourceReference: SourceReference;
     testSteps: ReadonlyArray<AssembledTestStep>;
     toMessage(): TestCase;

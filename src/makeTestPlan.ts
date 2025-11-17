@@ -52,6 +52,7 @@ export function makeTestPlan(
       const location = query.findLocationOf(pickle) as MessagesLocation
       return {
         id: newId(),
+        pickleId: pickle.id,
         name: strategy.reduce(lineage, pickle),
         sourceReference: {
           uri: pickle.uri,
@@ -65,7 +66,7 @@ export function makeTestPlan(
         toMessage() {
           return {
             id: this.id,
-            pickleId: pickle.id,
+            pickleId: this.pickleId,
             testSteps: this.testSteps.map((step) => step.toMessage()),
             testRunStartedId,
           }
