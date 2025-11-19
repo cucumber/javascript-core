@@ -49,7 +49,7 @@ export function makeTestPlan(
     name: gherkinDocument.feature?.name || gherkinDocument.uri,
     testCases: pickles.map((pickle) => {
       const lineage = query.findLineageBy(pickle) as Lineage
-      const location = query.findLocationOf(pickle) as MessagesLocation
+      const location = pickle.location as MessagesLocation
       return {
         id: newId(),
         pickleId: pickle.id,

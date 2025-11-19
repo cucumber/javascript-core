@@ -32,14 +32,14 @@
   "homepage": "https://github.com/cucumber/javascript-core#readme",
   "peerDependencies": {
     "@cucumber/cucumber-expressions": "*",
-    "@cucumber/messages": "*",
+    "@cucumber/messages": ">=31.0.0",
     "@cucumber/query": "*",
     "@cucumber/tag-expressions": "*"
   },
   "devDependencies": {
     "@cucumber/cucumber-expressions": "^18.0.1",
-    "@cucumber/gherkin": "^36.0.0",
-    "@cucumber/messages": "^30.0.0",
+    "@cucumber/gherkin": "^37.0.0",
+    "@cucumber/messages": "^31.0.0",
     "@cucumber/query": "^14.0.0",
     "@cucumber/tag-expressions": "^8.0.0",
     "@eslint/js": "^9.31.0",
