@@ -10,6 +10,8 @@ import {
   Hook,
   IdGenerator,
   Pickle,
+  PickleDocString,
+  PickleTable,
   SourceReference,
   StepDefinition,
   TestCase,
@@ -402,22 +404,32 @@ export interface TestPlanOptions {
 }
 
 /**
- * A function that has been validated and prepared for execution
+ * A step that has been validated and prepared for execution
  * @public
  * @remarks
- * Depending on the characteristics of the Cucumber implementation, additional
- * arguments may be prepended or appended to the arguments when passed to the
- * function.
+ * Depending on the characteristics of the Cucumber implementation, the
+ * function may be called in a different way and with the args positioned
+ * differently.
  */
-export type PreparedFunction = {
+export type PreparedStep = {
   /**
-   * The function that is ready to execute
+   * The user-authored function to be executed for this step
    */
   fn: SupportCodeFunction
   /**
-   * The arguments to pass to the function
+   * The arguments to pass to the step, as cucumber-expressions argument objects
    */
-  args: ReadonlyArray<unknown>
+  args: ReadonlyArray<Argument>
+  /**
+   * The data table to pass to the step, if there is one
+   * @remarks
+   * Use {@link DataTable.from} to turn this into a user-friendly object
+   */
+  dataTable?: PickleTable
+  /**
+   * The doc string to pass to the step, if there is one
+   */
+  docString?: PickleDocString
 }
 
 /**
@@ -448,14 +460,15 @@ export interface AssembledTestStep {
    */
   always: boolean
   /**
-   * Prepare the test step for execution and return the prepared function and arguments
-   * @param thisArg - the value to bound as `this` on the function
+   * Prepare the test step for execution and return the function and arguments
    * @remarks
    * For pickle steps, preparation includes finding matching step definitions from
    * the support code library and throwing if there is not exactly one, plus resolving
-   * the correct arguments from across expressions, doc strings and data tables.
+   * the correct arguments from across expressions, doc strings and data tables. The
+   * consumer can then call the function with the right arrangement of those arguments
+   * plus anything else as appropriate.
    */
-  prepare(thisArg?: unknown): PreparedFunction
+  prepare(): PreparedStep
   /**
    * Converts the step to a TestStep message
    */

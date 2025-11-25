@@ -1,6 +1,8 @@
+import { PickleTable } from '@cucumber/messages'
 import { expect } from 'chai'
 import { describe, it } from 'mocha'
 
+import { parseGherkin } from '../test/parseGherkin'
 import { DataTable } from './DataTable'
 
 describe('DataTable', () => {
@@ -100,6 +102,18 @@ describe('DataTable', () => {
         ['a', '1'],
         ['b', '2'],
         ['c', '3'],
+      ])
+    })
+  })
+
+  describe('from', () => {
+    it('should construct directly from a PickleTable', () => {
+      const { pickles } = parseGherkin('datatable.feature')
+
+      const dataTable = DataTable.from(pickles[0].steps[0].argument?.dataTable as PickleTable)
+      expect(dataTable.raw()).to.deep.eq([
+        ['a', 'b', 'c'],
+        ['1', '2', '3'],
       ])
     })
   })

@@ -1,42 +1,17 @@
-import * as fs from 'node:fs'
-import * as path from 'node:path'
-
-import { AstBuilder, compile, GherkinClassicTokenMatcher, Parser } from '@cucumber/gherkin'
-import { GherkinDocument, IdGenerator, Pickle } from '@cucumber/messages'
+import { IdGenerator } from '@cucumber/messages'
 import { expect, use } from 'chai'
 import sinon from 'sinon'
 import sinonChai from 'sinon-chai'
 
+import { parseGherkin } from '../test/parseGherkin'
 import { AmbiguousError } from './AmbiguousError'
 import { buildSupportCode } from './buildSupportCode'
-import { DataTable } from './DataTable'
 import { makeTestPlan } from './makeTestPlan'
 import { UndefinedError } from './UndefinedError'
 
 use(sinonChai)
 
-function parseGherkin(
-  file: string,
-  newId: () => string
-): { gherkinDocument: GherkinDocument; pickles: ReadonlyArray<Pickle> } {
-  const data = fs.readFileSync(path.join(__dirname, '..', 'testdata', file), { encoding: 'utf-8' })
-  const builder = new AstBuilder(newId)
-  const matcher = new GherkinClassicTokenMatcher()
-  const parser = new Parser(builder, matcher)
-  const uri = 'features/' + file
-  const gherkinDocument = {
-    uri,
-    ...parser.parse(data),
-  }
-  const pickles = compile(gherkinDocument, uri, newId)
-  return {
-    gherkinDocument,
-    pickles,
-  }
-}
-
 describe('makeTestPlan', () => {
-  class FakeWorld {}
   const testRunStartedId = 'run-id'
   let newId: () => string
 
@@ -154,7 +129,7 @@ describe('makeTestPlan', () => {
         }
       )
 
-      expect(() => result.testCases[0].testSteps[0].prepare(undefined)).to.throw(AmbiguousError)
+      expect(() => result.testCases[0].testSteps[0].prepare()).to.throw(AmbiguousError)
     })
 
     it('throws if a step is undefined', () => {
@@ -169,7 +144,7 @@ describe('makeTestPlan', () => {
       )
 
       try {
-        result.testCases[0].testSteps[0].prepare(undefined)
+        result.testCases[0].testSteps[0].prepare()
       } catch (err: any) {
         expect(err).to.be.instanceOf(UndefinedError)
         expect(err.pickleStep).to.eq(pickles[0].steps[0])
@@ -177,10 +152,7 @@ describe('makeTestPlan', () => {
     })
 
     it('matches and prepares a step without parameters', () => {
-      let capturedThis: any
-      const fn = sinon.spy(function (this: any) {
-        capturedThis = this
-      })
+      const fn = sinon.stub()
 
       const { gherkinDocument, pickles } = parseGherkin('minimal.feature', newId)
       const supportCodeLibrary = buildSupportCode({ newId })
@@ -198,19 +170,13 @@ describe('makeTestPlan', () => {
         }
       )
 
-      const fakeWorld = new FakeWorld()
-      const prepared = result.testCases[0].testSteps[0].prepare(fakeWorld)
+      const prepared = result.testCases[0].testSteps[0].prepare()
+      expect(prepared.fn).to.eq(fn)
       expect(prepared.args).to.deep.eq([])
-      prepared.fn()
-      expect(fn).to.have.been.calledWithExactly()
-      expect(capturedThis).to.eq(fakeWorld)
     })
 
     it('matches and prepares a step with parameters', () => {
-      let capturedThis: any
-      const fn = sinon.spy(function (this: any) {
-        capturedThis = this
-      })
+      const fn = sinon.stub()
 
       const { gherkinDocument, pickles } = parseGherkin('parameters.feature', newId)
       const supportCodeLibrary = buildSupportCode({ newId })
@@ -228,19 +194,13 @@ describe('makeTestPlan', () => {
         }
       )
 
-      const fakeWorld = new FakeWorld()
-      const prepared = result.testCases[0].testSteps[0].prepare(fakeWorld)
-      expect(prepared.args).to.deep.eq([4, 5])
-      prepared.fn(...prepared.args)
-      expect(fn).to.have.been.calledWithExactly(...prepared.args)
-      expect(capturedThis).to.eq(fakeWorld)
+      const prepared = result.testCases[0].testSteps[0].prepare()
+      expect(prepared.fn).to.eq(fn)
+      expect(prepared.args.map((arg) => arg.getValue(undefined))).to.deep.eq([4, 5])
     })
 
     it('matches and prepares a step with a data table', () => {
-      let capturedThis: any
-      const fn = sinon.spy(function (this: any) {
-        capturedThis = this
-      })
+      const fn = sinon.stub()
 
       const { gherkinDocument, pickles } = parseGherkin('datatable.feature', newId)
       const supportCodeLibrary = buildSupportCode({ newId })
@@ -258,24 +218,14 @@ describe('makeTestPlan', () => {
         }
       )
 
-      const fakeWorld = new FakeWorld()
-      const prepared = result.testCases[0].testSteps[0].prepare(fakeWorld)
-      expect(prepared.args).to.deep.eq([
-        new DataTable([
-          ['a', 'b', 'c'],
-          ['1', '2', '3'],
-        ]),
-      ])
-      prepared.fn(...prepared.args)
-      expect(fn).to.have.been.calledWithExactly(...prepared.args)
-      expect(capturedThis).to.eq(fakeWorld)
+      const prepared = result.testCases[0].testSteps[0].prepare()
+      expect(prepared.fn).to.eq(fn)
+      expect(prepared.args).to.deep.eq([])
+      expect(prepared.dataTable).to.eq(pickles[0].steps[0].argument?.dataTable)
     })
 
     it('matches and prepares a step with a doc string', () => {
-      let capturedThis: any
-      const fn = sinon.spy(function (this: any) {
-        capturedThis = this
-      })
+      const fn = sinon.stub()
 
       const { gherkinDocument, pickles } = parseGherkin('docstring.feature', newId)
       const supportCodeLibrary = buildSupportCode({ newId })
@@ -293,12 +243,10 @@ describe('makeTestPlan', () => {
         }
       )
 
-      const fakeWorld = new FakeWorld()
-      const prepared = result.testCases[0].testSteps[0].prepare(fakeWorld)
-      expect(prepared.args).to.deep.eq(['Hello world'])
-      prepared.fn(...prepared.args)
-      expect(fn).to.have.been.calledWithExactly(...prepared.args)
-      expect(capturedThis).to.eq(fakeWorld)
+      const prepared = result.testCases[0].testSteps[0].prepare()
+      expect(prepared.fn).to.eq(fn)
+      expect(prepared.args).to.deep.eq([])
+      expect(prepared.docString).to.eq(pickles[0].steps[0].argument?.docString)
     })
   })
 
@@ -472,11 +420,7 @@ describe('makeTestPlan', () => {
     })
 
     it('prepares Before hooks for execution', () => {
-      let capturedThis: any
-      const fn = sinon.spy(function (this: any) {
-        capturedThis = this
-      })
-
+      const fn = sinon.stub()
       const { gherkinDocument, pickles } = parseGherkin('minimal.feature', newId)
       const supportCodeLibrary = buildSupportCode({ newId })
         .beforeHook({
@@ -497,19 +441,13 @@ describe('makeTestPlan', () => {
         }
       )
 
-      const fakeWorld = new FakeWorld()
-      const prepared = result.testCases[0].testSteps[0].prepare(fakeWorld)
+      const prepared = result.testCases[0].testSteps[0].prepare()
+      expect(prepared.fn).to.eq(fn)
       expect(prepared.args).to.deep.eq([])
-      prepared.fn()
-      expect(fn).to.have.been.calledWithExactly()
-      expect(capturedThis).to.eq(fakeWorld)
     })
 
     it('prepares After hooks for execution', () => {
-      let capturedThis: any
-      const fn = sinon.spy(function (this: any) {
-        capturedThis = this
-      })
+      const fn = sinon.stub()
 
       const { gherkinDocument, pickles } = parseGherkin('minimal.feature', newId)
       const supportCodeLibrary = buildSupportCode({ newId })
@@ -531,12 +469,9 @@ describe('makeTestPlan', () => {
         }
       )
 
-      const fakeWorld = new FakeWorld()
-      const prepared = result.testCases[0].testSteps[3].prepare(fakeWorld)
+      const prepared = result.testCases[0].testSteps[3].prepare()
+      expect(prepared.fn).to.eq(fn)
       expect(prepared.args).to.deep.eq([])
-      prepared.fn()
-      expect(fn).to.have.been.calledWithExactly()
-      expect(capturedThis).to.eq(fakeWorld)
     })
   })
 

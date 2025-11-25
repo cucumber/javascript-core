@@ -1,9 +1,9 @@
+import { PickleTable } from '@cucumber/messages'
+
 /**
  * Represents the cells of a Gherkin data table associated with a test step.
  * @public
  * @remarks
- * For steps that include a data table, an instance of this will be injected as the last
- * argument to your step function.
  */
 export class DataTable {
   constructor(private readonly cells: ReadonlyArray<ReadonlyArray<string>>) {}
@@ -150,5 +150,21 @@ export class DataTable {
    */
   transpose(): DataTable {
     return new DataTable(this.cells[0].map((x, i) => this.cells.map((y) => y[i])))
+  }
+
+  /**
+   * Constructs a DataTable directly from a PickleTable
+   *
+   * @example
+   * ```typescript
+   * const dataTable = DataTable.from(pickleStep.argument.dataTable)
+   * ```
+   */
+  static from(pickleTable: PickleTable): DataTable {
+    return new DataTable(
+      pickleTable.rows.map((row) => {
+        return row.cells.map((cell) => cell.value)
+      })
+    )
   }
 }
