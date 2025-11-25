@@ -14,7 +14,9 @@ import { IdGenerator } from '@cucumber/messages';
 import { NamingStrategy } from '@cucumber/query';
 import parse from '@cucumber/tag-expressions';
 import { Pickle } from '@cucumber/messages';
+import { PickleDocString } from '@cucumber/messages';
 import { PickleStep } from '@cucumber/messages';
+import { PickleTable } from '@cucumber/messages';
 import { RegularExpression } from '@cucumber/cucumber-expressions';
 import { SourceReference } from '@cucumber/messages';
 import { StepDefinition } from '@cucumber/messages';
@@ -51,7 +53,7 @@ export interface AssembledTestStep {
         prefix: string;
         body: string;
     };
-    prepare(thisArg?: unknown): PreparedFunction;
+    prepare(): PreparedStep;
     sourceReference: SourceReference;
     toMessage(): TestStep;
 }
@@ -62,6 +64,7 @@ export function buildSupportCode(options?: SupportCodeOptions): SupportCodeBuild
 // @public
 export class DataTable {
     constructor(cells: ReadonlyArray<ReadonlyArray<string>>);
+    static from(pickleTable: PickleTable): DataTable;
     hashes(): ReadonlyArray<Record<string, string>>;
     list(): ReadonlyArray<string>;
     raw(): ReadonlyArray<ReadonlyArray<string>>;
@@ -156,9 +159,11 @@ export interface NewTestRunHook {
 }
 
 // @public
-export type PreparedFunction = {
+export type PreparedStep = {
     fn: SupportCodeFunction;
-    args: ReadonlyArray<unknown>;
+    args: ReadonlyArray<Argument>;
+    dataTable?: PickleTable;
+    docString?: PickleDocString;
 };
 
 // @public
