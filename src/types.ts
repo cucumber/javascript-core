@@ -422,6 +422,8 @@ export type PreparedStep = {
   args: ReadonlyArray<Argument>
   /**
    * The data table to pass to the step, if there is one
+   * @remarks
+   * Use {@link DataTable.from} to turn this into a user-friendly object
    */
   dataTable?: PickleTable
   /**
