@@ -1,38 +1,15 @@
-import * as fs from 'node:fs'
-import * as path from 'node:path'
-
-import { AstBuilder, compile, GherkinClassicTokenMatcher, Parser } from '@cucumber/gherkin'
-import { GherkinDocument, IdGenerator, Pickle } from '@cucumber/messages'
+import { IdGenerator } from '@cucumber/messages'
 import { expect, use } from 'chai'
 import sinon from 'sinon'
 import sinonChai from 'sinon-chai'
 
+import { parseGherkin } from '../test/parseGherkin'
 import { AmbiguousError } from './AmbiguousError'
 import { buildSupportCode } from './buildSupportCode'
 import { makeTestPlan } from './makeTestPlan'
 import { UndefinedError } from './UndefinedError'
 
 use(sinonChai)
-
-function parseGherkin(
-  file: string,
-  newId: () => string
-): { gherkinDocument: GherkinDocument; pickles: ReadonlyArray<Pickle> } {
-  const data = fs.readFileSync(path.join(__dirname, '..', 'testdata', file), { encoding: 'utf-8' })
-  const builder = new AstBuilder(newId)
-  const matcher = new GherkinClassicTokenMatcher()
-  const parser = new Parser(builder, matcher)
-  const uri = 'features/' + file
-  const gherkinDocument = {
-    uri,
-    ...parser.parse(data),
-  }
-  const pickles = compile(gherkinDocument, uri, newId)
-  return {
-    gherkinDocument,
-    pickles,
-  }
-}
 
 describe('makeTestPlan', () => {
   const testRunStartedId = 'run-id'
