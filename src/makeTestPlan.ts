@@ -17,7 +17,6 @@ import {
 } from '@cucumber/query'
 
 import { AmbiguousError } from './AmbiguousError'
-import { DataTable } from './DataTable'
 import {
   AssembledTestPlan,
   AssembledTestStep,
@@ -104,9 +103,9 @@ function fromBeforeHooks(
         location,
       },
       always: false,
-      prepare(thisArg) {
+      prepare() {
         return {
-          fn: def.fn.bind(thisArg),
+          fn: def.fn,
           args: [],
         }
       },
@@ -141,9 +140,9 @@ function fromAfterHooks(
           location,
         },
         always: true,
-        prepare(thisArg) {
+        prepare() {
           return {
-            fn: def.fn.bind(thisArg),
+            fn: def.fn,
             args: [],
           }
         },
@@ -177,7 +176,7 @@ function fromPickleSteps(
         location: step.location,
       },
       always: false,
-      prepare(thisArg) {
+      prepare() {
         if (matched.length < 1) {
           throw new UndefinedError(pickleStep)
         } else if (matched.length > 1) {
@@ -187,22 +186,11 @@ function fromPickleSteps(
           )
         } else {
           const { def, args } = matched[0]
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const allArgs: Array<any> = args.map((arg) => arg.getValue(thisArg))
-          if (pickleStep.argument?.dataTable) {
-            allArgs.push(
-              new DataTable(
-                pickleStep.argument.dataTable.rows.map((row) => {
-                  return row.cells.map((cell) => cell.value)
-                })
-              )
-            )
-          } else if (pickleStep.argument?.docString) {
-            allArgs.push(pickleStep.argument.docString.content)
-          }
           return {
-            fn: def.fn.bind(thisArg),
-            args: allArgs,
+            fn: def.fn,
+            args,
+            dataTable: pickleStep.argument?.dataTable,
+            docString: pickleStep.argument?.docString,
           }
         }
       },
