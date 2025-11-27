@@ -18,6 +18,7 @@ import { PickleDocString } from '@cucumber/messages';
 import { PickleStep } from '@cucumber/messages';
 import { PickleTable } from '@cucumber/messages';
 import { RegularExpression } from '@cucumber/cucumber-expressions';
+import { Snippet } from '@cucumber/messages';
 import { SourceReference } from '@cucumber/messages';
 import { StepDefinition } from '@cucumber/messages';
 import { TestCase } from '@cucumber/messages';
@@ -25,8 +26,15 @@ import { TestStep } from '@cucumber/messages';
 
 // @public
 export class AmbiguousError extends Error {
-    constructor(text: string, references: ReadonlyArray<SourceReference>);
+    constructor(step: AmbiguousStep);
 }
+
+// @public
+export type AmbiguousStep = {
+    type: 'ambiguous';
+    pickleStep: PickleStep;
+    matches: ReadonlyArray<DefinedStep>;
+};
 
 // @public
 export interface AssembledTestCase {
@@ -53,7 +61,7 @@ export interface AssembledTestStep {
         prefix: string;
         body: string;
     };
-    prepare(): PreparedStep;
+    prepare(): PreparedStep | UndefinedStep | AmbiguousStep;
     sourceReference: SourceReference;
     toMessage(): TestStep;
 }
@@ -160,6 +168,7 @@ export interface NewTestRunHook {
 
 // @public
 export type PreparedStep = {
+    type: 'prepared';
     fn: SupportCodeFunction;
     args: ReadonlyArray<Argument>;
     dataTable?: PickleTable;
@@ -212,15 +221,19 @@ export interface TestPlanOptions {
 
 // @public
 export class UndefinedError extends Error {
-    constructor(pickleStep: PickleStep);
-    // (undocumented)
-    readonly pickleStep: PickleStep;
+    constructor(step: UndefinedStep, snippets?: ReadonlyArray<Snippet>);
 }
 
 // @public
 export type UndefinedParameterType = {
     name: string;
     expression: string;
+};
+
+// @public
+export type UndefinedStep = {
+    type: 'undefined';
+    pickleStep: PickleStep;
 };
 
 // (No @packageDocumentation comment for this package)

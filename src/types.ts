@@ -413,6 +413,10 @@ export interface TestPlanOptions {
  */
 export type PreparedStep = {
   /**
+   * Discriminator field to identify this as a prepared step
+   */
+  type: 'prepared'
+  /**
    * The user-authored function to be executed for this step
    */
   fn: SupportCodeFunction
@@ -430,6 +434,40 @@ export type PreparedStep = {
    * The doc string to pass to the step, if there is one
    */
   docString?: PickleDocString
+}
+
+/**
+ * A step that could not be matched to any step definitions
+ * @public
+ */
+export type UndefinedStep = {
+  /**
+   * Discriminator field to identify this as an undefined step
+   */
+  type: 'undefined'
+  /**
+   * The pickle step that could not be matched
+   */
+  pickleStep: import('@cucumber/messages').PickleStep
+}
+
+/**
+ * A step that was matched to multiple step definitions
+ * @public
+ */
+export type AmbiguousStep = {
+  /**
+   * Discriminator field to identify this as an ambiguous step
+   */
+  type: 'ambiguous'
+  /**
+   * The pickle step that was ambiguous
+   */
+  pickleStep: import('@cucumber/messages').PickleStep
+  /**
+   * The step definitions that matched
+   */
+  matches: ReadonlyArray<DefinedStep>
 }
 
 /**
@@ -460,15 +498,17 @@ export interface AssembledTestStep {
    */
   always: boolean
   /**
-   * Prepare the test step for execution and return the function and arguments
+   * Prepare the test step for execution
    * @remarks
    * For pickle steps, preparation includes finding matching step definitions from
-   * the support code library and throwing if there is not exactly one, plus resolving
-   * the correct arguments from across expressions, doc strings and data tables. The
-   * consumer can then call the function with the right arrangement of those arguments
+   * the support code library and returning the appropriate result. If there are no
+   * matches, an {@link UndefinedStep} is returned. If there are multiple matches, an
+   * {@link AmbiguousStep} is returned. Otherwise, a {@link PreparedStep} is returned
+   * with the correct arguments from across expressions, doc strings and data tables.
+   * The consumer can then call the function with the right arrangement of those arguments
    * plus anything else as appropriate.
    */
-  prepare(): PreparedStep
+  prepare(): PreparedStep | UndefinedStep | AmbiguousStep
   /**
    * Converts the step to a TestStep message
    */

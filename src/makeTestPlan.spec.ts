@@ -4,10 +4,8 @@ import sinon from 'sinon'
 import sinonChai from 'sinon-chai'
 
 import { parseGherkin } from '../test/parseGherkin'
-import { AmbiguousError } from './AmbiguousError'
 import { buildSupportCode } from './buildSupportCode'
 import { makeTestPlan } from './makeTestPlan'
-import { UndefinedError } from './UndefinedError'
 
 use(sinonChai)
 
@@ -107,7 +105,7 @@ describe('makeTestPlan', () => {
   })
 
   describe('pickle steps', () => {
-    it('throws if a step is ambiguous', () => {
+    it('returns an ambiguous step when a step has multiple matches', () => {
       const { gherkinDocument, pickles } = parseGherkin('minimal.feature', newId)
       const supportCodeLibrary = buildSupportCode({ newId })
         .step({
@@ -129,10 +127,15 @@ describe('makeTestPlan', () => {
         }
       )
 
-      expect(() => result.testCases[0].testSteps[0].prepare()).to.throw(AmbiguousError)
+      const prepared = result.testCases[0].testSteps[0].prepare()
+      expect(prepared.type).to.eq('ambiguous')
+      if (prepared.type === 'ambiguous') {
+        expect(prepared.pickleStep).to.eq(pickles[0].steps[0])
+        expect(prepared.matches).to.have.lengthOf(2)
+      }
     })
 
-    it('throws if a step is undefined', () => {
+    it('returns an undefined step when a step has no matches', () => {
       const { gherkinDocument, pickles } = parseGherkin('minimal.feature', newId)
       const supportCodeLibrary = buildSupportCode({ newId }).build()
 
@@ -143,11 +146,10 @@ describe('makeTestPlan', () => {
         }
       )
 
-      try {
-        result.testCases[0].testSteps[0].prepare()
-      } catch (err: any) {
-        expect(err).to.be.instanceOf(UndefinedError)
-        expect(err.pickleStep).to.eq(pickles[0].steps[0])
+      const prepared = result.testCases[0].testSteps[0].prepare()
+      expect(prepared.type).to.eq('undefined')
+      if (prepared.type === 'undefined') {
+        expect(prepared.pickleStep).to.eq(pickles[0].steps[0])
       }
     })
 
@@ -171,8 +173,11 @@ describe('makeTestPlan', () => {
       )
 
       const prepared = result.testCases[0].testSteps[0].prepare()
-      expect(prepared.fn).to.eq(fn)
-      expect(prepared.args).to.deep.eq([])
+      expect(prepared.type).to.eq('prepared')
+      if (prepared.type === 'prepared') {
+        expect(prepared.fn).to.eq(fn)
+        expect(prepared.args).to.deep.eq([])
+      }
     })
 
     it('matches and prepares a step with parameters', () => {
@@ -195,8 +200,11 @@ describe('makeTestPlan', () => {
       )
 
       const prepared = result.testCases[0].testSteps[0].prepare()
-      expect(prepared.fn).to.eq(fn)
-      expect(prepared.args.map((arg) => arg.getValue(undefined))).to.deep.eq([4, 5])
+      expect(prepared.type).to.eq('prepared')
+      if (prepared.type === 'prepared') {
+        expect(prepared.fn).to.eq(fn)
+        expect(prepared.args.map((arg) => arg.getValue(undefined))).to.deep.eq([4, 5])
+      }
     })
 
     it('matches and prepares a step with a data table', () => {
@@ -219,9 +227,12 @@ describe('makeTestPlan', () => {
       )
 
       const prepared = result.testCases[0].testSteps[0].prepare()
-      expect(prepared.fn).to.eq(fn)
-      expect(prepared.args).to.deep.eq([])
-      expect(prepared.dataTable).to.eq(pickles[0].steps[0].argument?.dataTable)
+      expect(prepared.type).to.eq('prepared')
+      if (prepared.type === 'prepared') {
+        expect(prepared.fn).to.eq(fn)
+        expect(prepared.args).to.deep.eq([])
+        expect(prepared.dataTable).to.eq(pickles[0].steps[0].argument?.dataTable)
+      }
     })
 
     it('matches and prepares a step with a doc string', () => {
@@ -244,9 +255,12 @@ describe('makeTestPlan', () => {
       )
 
       const prepared = result.testCases[0].testSteps[0].prepare()
-      expect(prepared.fn).to.eq(fn)
-      expect(prepared.args).to.deep.eq([])
-      expect(prepared.docString).to.eq(pickles[0].steps[0].argument?.docString)
+      expect(prepared.type).to.eq('prepared')
+      if (prepared.type === 'prepared') {
+        expect(prepared.fn).to.eq(fn)
+        expect(prepared.args).to.deep.eq([])
+        expect(prepared.docString).to.eq(pickles[0].steps[0].argument?.docString)
+      }
     })
   })
 
@@ -442,8 +456,11 @@ describe('makeTestPlan', () => {
       )
 
       const prepared = result.testCases[0].testSteps[0].prepare()
-      expect(prepared.fn).to.eq(fn)
-      expect(prepared.args).to.deep.eq([])
+      expect(prepared.type).to.eq('prepared')
+      if (prepared.type === 'prepared') {
+        expect(prepared.fn).to.eq(fn)
+        expect(prepared.args).to.deep.eq([])
+      }
     })
 
     it('prepares After hooks for execution', () => {
@@ -470,8 +487,11 @@ describe('makeTestPlan', () => {
       )
 
       const prepared = result.testCases[0].testSteps[3].prepare()
-      expect(prepared.fn).to.eq(fn)
-      expect(prepared.args).to.deep.eq([])
+      expect(prepared.type).to.eq('prepared')
+      if (prepared.type === 'prepared') {
+        expect(prepared.fn).to.eq(fn)
+        expect(prepared.args).to.deep.eq([])
+      }
     })
   })
 
