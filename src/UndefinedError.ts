@@ -1,3 +1,5 @@
+import { Snippet } from '@cucumber/messages'
+
 import { UndefinedStep } from './types'
 
 /**
@@ -5,7 +7,15 @@ import { UndefinedStep } from './types'
  * @public
  */
 export class UndefinedError extends Error {
-  constructor(step: UndefinedStep) {
-    super(`No matching step definitions found for text "${step.pickleStep.text}"`)
+  constructor(step: UndefinedStep, snippets?: ReadonlyArray<Snippet>) {
+    let message = `No matching step definitions found for text "${step.pickleStep.text}"`
+
+    if (snippets && snippets.length > 0) {
+      message +=
+        '\n\nYou can implement the step with this code:\n\n' +
+        snippets.map((snippet) => snippet.code).join('\n\n')
+    }
+
+    super(message)
   }
 }
