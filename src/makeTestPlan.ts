@@ -16,7 +16,6 @@ import {
   Query,
 } from '@cucumber/query'
 
-import { AmbiguousError } from './AmbiguousError'
 import {
   AssembledTestPlan,
   AssembledTestStep,
@@ -24,7 +23,6 @@ import {
   TestPlanIngredients,
   TestPlanOptions,
 } from './types'
-import { UndefinedError } from './UndefinedError'
 
 /**
  * Make an executable test plan for a Gherkin document
@@ -105,6 +103,7 @@ function fromBeforeHooks(
       always: false,
       prepare() {
         return {
+          type: 'prepared' as const,
           fn: def.fn,
           args: [],
         }
@@ -142,6 +141,7 @@ function fromAfterHooks(
         always: true,
         prepare() {
           return {
+            type: 'prepared' as const,
             fn: def.fn,
             args: [],
           }
@@ -178,15 +178,20 @@ function fromPickleSteps(
       always: false,
       prepare() {
         if (matched.length < 1) {
-          throw new UndefinedError(pickleStep)
+          return {
+            type: 'undefined',
+            pickleStep,
+          }
         } else if (matched.length > 1) {
-          throw new AmbiguousError(
-            pickleStep.text,
-            matched.map(({ def }) => def.sourceReference)
-          )
+          return {
+            type: 'ambiguous',
+            pickleStep,
+            matches: matched.map(({ def }) => def),
+          }
         } else {
           const { def, args } = matched[0]
           return {
+            type: 'prepared',
             fn: def.fn,
             args,
             dataTable: pickleStep.argument?.dataTable,
