@@ -337,6 +337,10 @@ export interface SupportCodeLibrary {
    */
   findAllStepsBy(text: string): ReadonlyArray<MatchedStep>
   /**
+   * Get all source references from the support code library
+   */
+  getAllSources(): ReadonlyArray<SourceReference>
+  /**
    * Get a generator for Cucumber Expressions based on the currently defined parameter types
    */
   getExpressionGenerator(): CucumberExpressionGenerator
