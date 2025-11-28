@@ -1,4 +1,5 @@
 import { CucumberExpressionGenerator, ParameterTypeRegistry } from '@cucumber/cucumber-expressions'
+import { SourceReference } from '@cucumber/messages'
 
 import {
   DefinedParameterType,
@@ -59,6 +60,17 @@ export class SupportCodeLibraryImpl implements SupportCodeLibrary {
       }
       return true
     })
+  }
+
+  getAllSources(): ReadonlyArray<SourceReference> {
+    return [
+      ...this.parameterTypes.map((pt) => pt.sourceReference),
+      ...this.steps.map((step) => step.sourceReference),
+      ...this.beforeHooks.map((hook) => hook.sourceReference),
+      ...this.afterHooks.map((hook) => hook.sourceReference),
+      ...this.beforeAllHooks.map((hook) => hook.sourceReference),
+      ...this.afterAllHooks.map((hook) => hook.sourceReference),
+    ]
   }
 
   getAllBeforeAllHooks(): ReadonlyArray<DefinedTestRunHook> {

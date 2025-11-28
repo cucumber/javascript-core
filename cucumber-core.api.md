@@ -196,6 +196,7 @@ export interface SupportCodeLibrary {
     findAllStepsBy(text: string): ReadonlyArray<MatchedStep>;
     getAllAfterAllHooks(): ReadonlyArray<DefinedTestRunHook>;
     getAllBeforeAllHooks(): ReadonlyArray<DefinedTestRunHook>;
+    getAllSources(): ReadonlyArray<SourceReference>;
     getExpressionGenerator(): CucumberExpressionGenerator;
     toEnvelopes(): ReadonlyArray<Envelope>;
 }

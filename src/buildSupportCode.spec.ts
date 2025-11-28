@@ -16,7 +16,7 @@ describe('buildSupportCode', () => {
   describe('test case hooks', () => {
     let library: SupportCodeLibrary
     beforeEach(() => {
-      library = buildSupportCode({ newId: IdGenerator.incrementing() })
+      library = buildSupportCode({ newId })
         .beforeHook({
           name: 'general setup',
           fn: sinon.stub(),
@@ -348,7 +348,7 @@ describe('buildSupportCode', () => {
   describe('test run hooks', () => {
     let library: SupportCodeLibrary
     beforeEach(() => {
-      library = buildSupportCode({ newId: IdGenerator.incrementing() })
+      library = buildSupportCode({ newId })
         .beforeAllHook({
           name: 'setup 1',
           fn: sinon.stub(),
@@ -421,6 +421,57 @@ describe('buildSupportCode', () => {
           },
         },
       ])
+    })
+  })
+
+  describe('sources', () => {
+    it('should return all source references from parameter types, steps, and hooks', () => {
+      const library = buildSupportCode({ newId })
+        .parameterType({
+          name: 'custom',
+          regexp: /\d+/,
+          sourceReference: { uri: 'params.ts', location: { line: 1, column: 1 } },
+        })
+        .step({
+          pattern: 'a step',
+          fn: sinon.stub(),
+          sourceReference: { uri: 'steps.js', location: { line: 1, column: 1 } },
+        })
+        .beforeHook({
+          fn: sinon.stub(),
+          sourceReference: { uri: 'hooks.ts', location: { line: 2, column: 1 } },
+        })
+        .afterHook({
+          fn: sinon.stub(),
+          sourceReference: { uri: 'hooks.ts', location: { line: 3, column: 1 } },
+        })
+        .beforeAllHook({
+          fn: sinon.stub(),
+          sourceReference: { uri: 'setup.js', location: { line: 1, column: 1 } },
+        })
+        .afterAllHook({
+          fn: sinon.stub(),
+          sourceReference: { uri: 'teardown.js', location: { line: 1, column: 1 } },
+        })
+        .build()
+
+      const sources = library.getAllSources()
+
+      expect(sources).to.have.lengthOf(6)
+      expect(sources).to.deep.include({ uri: 'params.ts', location: { line: 1, column: 1 } })
+      expect(sources).to.deep.include({ uri: 'steps.js', location: { line: 1, column: 1 } })
+      expect(sources).to.deep.include({ uri: 'hooks.ts', location: { line: 2, column: 1 } })
+      expect(sources).to.deep.include({ uri: 'hooks.ts', location: { line: 3, column: 1 } })
+      expect(sources).to.deep.include({ uri: 'setup.js', location: { line: 1, column: 1 } })
+      expect(sources).to.deep.include({ uri: 'teardown.js', location: { line: 1, column: 1 } })
+    })
+
+    it('should return empty array when there is no support code', () => {
+      const library = buildSupportCode({ newId }).build()
+
+      const sources = library.getAllSources()
+
+      expect(sources).to.deep.equal([])
     })
   })
 })
