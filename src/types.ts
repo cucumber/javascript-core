@@ -337,7 +337,7 @@ export interface SupportCodeLibrary {
    */
   findAllStepsBy(text: string): ReadonlyArray<MatchedStep>
   /**
-   * Get all source references from the support code library
+   * Get all source references from across all support code
    */
   getAllSources(): ReadonlyArray<SourceReference>
   /**
