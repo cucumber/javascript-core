@@ -21,7 +21,7 @@ import {
   UndefinedParameterType,
 } from './types'
 
-type WithIdAndOrder<T> = { id: string; order: number } & T
+type Registered<T> = { id: string; order: number } & T
 
 /**
  * @internal
@@ -29,12 +29,12 @@ type WithIdAndOrder<T> = { id: string; order: number } & T
 export class SupportCodeBuilderImpl implements SupportCodeBuilder {
   private readonly parameterTypeRegistry = new ParameterTypeRegistry()
   private readonly undefinedParameterTypes: Map<string, Set<string>> = new Map()
-  private readonly parameterTypes: Array<WithIdAndOrder<NewParameterType>> = []
-  private readonly steps: Array<WithIdAndOrder<NewStep>> = []
-  private readonly beforeHooks: Array<WithIdAndOrder<NewTestCaseHook>> = []
-  private readonly afterHooks: Array<WithIdAndOrder<NewTestCaseHook>> = []
-  private readonly beforeAllHooks: Array<WithIdAndOrder<NewTestRunHook>> = []
-  private readonly afterAllHooks: Array<WithIdAndOrder<NewTestRunHook>> = []
+  private readonly parameterTypes: Array<Registered<NewParameterType>> = []
+  private readonly steps: Array<Registered<NewStep>> = []
+  private readonly beforeHooks: Array<Registered<NewTestCaseHook>> = []
+  private readonly afterHooks: Array<Registered<NewTestCaseHook>> = []
+  private readonly beforeAllHooks: Array<Registered<NewTestRunHook>> = []
+  private readonly afterAllHooks: Array<Registered<NewTestRunHook>> = []
   private sequence = 0
 
   constructor(private readonly newId: () => string) {}

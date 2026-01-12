@@ -88,54 +88,42 @@ export class SupportCodeLibraryImpl implements SupportCodeLibrary {
 
   toEnvelopes() {
     const definedThings: ReadonlyArray<OrderedEnvelope> = [
-      ...this.parameterTypes.map((definedParameterType) => {
-        return {
-          order: definedParameterType.order,
-          envelope: {
-            parameterType: definedParameterType.toMessage(),
-          },
-        }
-      }),
-      ...this.steps.map((definedStep) => {
-        return {
-          order: definedStep.order,
-          envelope: {
-            stepDefinition: definedStep.toMessage(),
-          },
-        }
-      }),
-      ...this.beforeHooks.map((definedHook) => {
-        return {
-          order: definedHook.order,
-          envelope: {
-            hook: definedHook.toMessage(),
-          },
-        }
-      }),
-      ...this.afterHooks.map((definedHook) => {
-        return {
-          order: definedHook.order,
-          envelope: {
-            hook: definedHook.toMessage(),
-          },
-        }
-      }),
-      ...this.beforeAllHooks.map((definedHook) => {
-        return {
-          order: definedHook.order,
-          envelope: {
-            hook: definedHook.toMessage(),
-          },
-        }
-      }),
-      ...this.afterAllHooks.map((definedHook) => {
-        return {
-          order: definedHook.order,
-          envelope: {
-            hook: definedHook.toMessage(),
-          },
-        }
-      }),
+      ...this.parameterTypes.map((definedParameterType) => ({
+        order: definedParameterType.order,
+        envelope: {
+          parameterType: definedParameterType.toMessage(),
+        },
+      })),
+      ...this.steps.map((definedStep) => ({
+        order: definedStep.order,
+        envelope: {
+          stepDefinition: definedStep.toMessage(),
+        },
+      })),
+      ...this.beforeHooks.map((definedHook) => ({
+        order: definedHook.order,
+        envelope: {
+          hook: definedHook.toMessage(),
+        },
+      })),
+      ...this.afterHooks.map((definedHook) => ({
+        order: definedHook.order,
+        envelope: {
+          hook: definedHook.toMessage(),
+        },
+      })),
+      ...this.beforeAllHooks.map((definedHook) => ({
+        order: definedHook.order,
+        envelope: {
+          hook: definedHook.toMessage(),
+        },
+      })),
+      ...this.afterAllHooks.map((definedHook) => ({
+        order: definedHook.order,
+        envelope: {
+          hook: definedHook.toMessage(),
+        },
+      })),
     ]
 
     return [
