@@ -457,6 +457,7 @@ describe('buildSupportCode', () => {
         .parameterType({
           name: 'flight',
           regexp: /([A-Z]{3})-([A-Z]{3})/,
+          /* c8 ignore next 3 */
           transformer(from: string, to: string) {
             return [from, to]
           },
