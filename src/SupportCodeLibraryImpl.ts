@@ -1,5 +1,5 @@
 import { CucumberExpressionGenerator, ParameterTypeRegistry } from '@cucumber/cucumber-expressions'
-import { SourceReference } from '@cucumber/messages'
+import { Envelope, SourceReference } from '@cucumber/messages'
 
 import {
   DefinedParameterType,
@@ -10,6 +10,11 @@ import {
   SupportCodeLibrary,
   UndefinedParameterType,
 } from './types'
+
+type OrderedEnvelope = {
+  order: number
+  envelope: Envelope
+}
 
 /**
  * @internal
@@ -82,20 +87,62 @@ export class SupportCodeLibraryImpl implements SupportCodeLibrary {
   }
 
   toEnvelopes() {
+    const definedThings: ReadonlyArray<OrderedEnvelope> = [
+      ...this.parameterTypes.map((definedParameterType) => {
+        return {
+          order: definedParameterType.order,
+          envelope: {
+            parameterType: definedParameterType.toMessage(),
+          },
+        }
+      }),
+      ...this.steps.map((definedStep) => {
+        return {
+          order: definedStep.order,
+          envelope: {
+            stepDefinition: definedStep.toMessage(),
+          },
+        }
+      }),
+      ...this.beforeHooks.map((definedHook) => {
+        return {
+          order: definedHook.order,
+          envelope: {
+            hook: definedHook.toMessage(),
+          },
+        }
+      }),
+      ...this.afterHooks.map((definedHook) => {
+        return {
+          order: definedHook.order,
+          envelope: {
+            hook: definedHook.toMessage(),
+          },
+        }
+      }),
+      ...this.beforeAllHooks.map((definedHook) => {
+        return {
+          order: definedHook.order,
+          envelope: {
+            hook: definedHook.toMessage(),
+          },
+        }
+      }),
+      ...this.afterAllHooks.map((definedHook) => {
+        return {
+          order: definedHook.order,
+          envelope: {
+            hook: definedHook.toMessage(),
+          },
+        }
+      }),
+    ]
+
     return [
-      ...this.parameterTypes
-        .map((definedParameterType) => definedParameterType.toMessage())
-        .map((parameterType) => ({ parameterType })),
-      ...this.steps
-        .map((definedStep) => definedStep.toMessage())
-        .map((stepDefinition) => ({ stepDefinition })),
-      ...this.undefinedParameterTypes.map((undefinedParameterType) => ({ undefinedParameterType })),
-      ...this.beforeHooks.map((definedHook) => definedHook.toMessage()).map((hook) => ({ hook })),
-      ...this.afterHooks.map((definedHook) => definedHook.toMessage()).map((hook) => ({ hook })),
-      ...this.beforeAllHooks
-        .map((definedHook) => definedHook.toMessage())
-        .map((hook) => ({ hook })),
-      ...this.afterAllHooks.map((definedHook) => definedHook.toMessage()).map((hook) => ({ hook })),
+      ...definedThings.toSorted((a, b) => a.order - b.order).map(({ envelope }) => envelope),
+      ...this.undefinedParameterTypes.map((undefinedParameterType) => ({
+        undefinedParameterType,
+      })),
     ]
   }
 }
