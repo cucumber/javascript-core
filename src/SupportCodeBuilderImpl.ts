@@ -21,7 +21,7 @@ import {
   UndefinedParameterType,
 } from './types'
 
-type WithId<T> = { id: string } & T
+type Registered<T> = { id: string; order: number } & T
 
 /**
  * @internal
@@ -29,18 +29,20 @@ type WithId<T> = { id: string } & T
 export class SupportCodeBuilderImpl implements SupportCodeBuilder {
   private readonly parameterTypeRegistry = new ParameterTypeRegistry()
   private readonly undefinedParameterTypes: Map<string, Set<string>> = new Map()
-  private readonly parameterTypes: Array<WithId<NewParameterType>> = []
-  private readonly steps: Array<WithId<NewStep>> = []
-  private readonly beforeHooks: Array<WithId<NewTestCaseHook>> = []
-  private readonly afterHooks: Array<WithId<NewTestCaseHook>> = []
-  private readonly beforeAllHooks: Array<WithId<NewTestRunHook>> = []
-  private readonly afterAllHooks: Array<WithId<NewTestRunHook>> = []
+  private readonly parameterTypes: Array<Registered<NewParameterType>> = []
+  private readonly steps: Array<Registered<NewStep>> = []
+  private readonly beforeHooks: Array<Registered<NewTestCaseHook>> = []
+  private readonly afterHooks: Array<Registered<NewTestCaseHook>> = []
+  private readonly beforeAllHooks: Array<Registered<NewTestRunHook>> = []
+  private readonly afterAllHooks: Array<Registered<NewTestRunHook>> = []
+  private sequence = 0
 
   constructor(private readonly newId: () => string) {}
 
   parameterType(options: NewParameterType) {
     this.parameterTypes.push({
       id: this.newId(),
+      order: this.sequence++,
       ...options,
     })
     return this
@@ -49,6 +51,7 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
   beforeHook(options: NewTestCaseHook) {
     this.beforeHooks.push({
       id: this.newId(),
+      order: this.sequence++,
       ...options,
     })
     return this
@@ -57,6 +60,7 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
   afterHook(options: NewTestCaseHook) {
     this.afterHooks.push({
       id: this.newId(),
+      order: this.sequence++,
       ...options,
     })
     return this
@@ -65,6 +69,7 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
   step(options: NewStep) {
     this.steps.push({
       id: this.newId(),
+      order: this.sequence++,
       ...options,
     })
     return this
@@ -73,6 +78,7 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
   beforeAllHook(options: NewTestRunHook) {
     this.beforeAllHooks.push({
       id: this.newId(),
+      order: this.sequence++,
       ...options,
     })
     return this
@@ -81,6 +87,7 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
   afterAllHook(options: NewTestRunHook) {
     this.afterAllHooks.push({
       id: this.newId(),
+      order: this.sequence++,
       ...options,
     })
     return this
@@ -99,18 +106,29 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
       this.parameterTypeRegistry.defineParameterType(parameterType)
       return {
         id: registered.id,
+        order: registered.order,
         name: registered.name,
         regularExpressions: [...parameterType.regexpStrings],
         preferForRegularExpressionMatch: parameterType.preferForRegexpMatch as boolean,
         useForSnippets: parameterType.useForSnippets as boolean,
         sourceReference: registered.sourceReference,
+        toMessage() {
+          return {
+            id: this.id,
+            name: this.name,
+            regularExpressions: this.regularExpressions,
+            preferForRegularExpressionMatch: this.preferForRegularExpressionMatch,
+            useForSnippets: this.useForSnippets,
+            sourceReference: this.sourceReference,
+          }
+        },
       }
     })
   }
 
   private buildSteps(): ReadonlyArray<DefinedStep> {
     return this.steps
-      .map(({ id, pattern, fn, sourceReference }) => {
+      .map(({ id, order, pattern, fn, sourceReference }) => {
         const compiled = this.compileExpression(pattern)
         if (!compiled) {
           return undefined
@@ -118,6 +136,7 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
         const source = this.extractPatternSource(pattern)
         return {
           id,
+          order,
           expression: {
             raw: pattern,
             compiled,
@@ -184,9 +203,10 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
   }
 
   private buildBeforeHooks(): ReadonlyArray<DefinedTestCaseHook> {
-    return this.beforeHooks.map(({ id, name, tags, fn, sourceReference }) => {
+    return this.beforeHooks.map(({ id, order, name, tags, fn, sourceReference }) => {
       return {
         id,
+        order,
         name,
         tags: tags
           ? {
@@ -210,9 +230,10 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
   }
 
   private buildAfterHooks(): ReadonlyArray<DefinedTestCaseHook> {
-    return this.afterHooks.map(({ id, name, tags, fn, sourceReference }) => {
+    return this.afterHooks.map(({ id, order, name, tags, fn, sourceReference }) => {
       return {
         id,
+        order,
         name,
         tags: tags
           ? {
@@ -236,9 +257,10 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
   }
 
   private buildBeforeAllHooks(): ReadonlyArray<DefinedTestRunHook> {
-    return this.beforeAllHooks.map(({ id, name, fn, sourceReference }) => {
+    return this.beforeAllHooks.map(({ id, order, name, fn, sourceReference }) => {
       return {
         id,
+        order,
         name,
         fn,
         sourceReference,
@@ -255,9 +277,10 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
   }
 
   private buildAfterAllHooks(): ReadonlyArray<DefinedTestRunHook> {
-    return this.afterAllHooks.map(({ id, name, fn, sourceReference }) => {
+    return this.afterAllHooks.map(({ id, order, name, fn, sourceReference }) => {
       return {
         id,
+        order,
         name,
         fn,
         sourceReference,

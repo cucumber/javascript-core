@@ -12,6 +12,7 @@ import { GherkinDocument } from '@cucumber/messages';
 import { Hook } from '@cucumber/messages';
 import { IdGenerator } from '@cucumber/messages';
 import { NamingStrategy } from '@cucumber/query';
+import { ParameterType } from '@cucumber/messages';
 import parse from '@cucumber/tag-expressions';
 import { Pickle } from '@cucumber/messages';
 import { PickleDocString } from '@cucumber/messages';
@@ -84,16 +85,19 @@ export class DataTable {
 // @public
 export type DefinedParameterType = {
     id: string;
+    order: number;
     name: string;
     regularExpressions: ReadonlyArray<string>;
     preferForRegularExpressionMatch: boolean;
     useForSnippets: boolean;
     sourceReference: SourceReference;
+    toMessage(): ParameterType;
 };
 
 // @public
 export type DefinedStep = {
     id: string;
+    order: number;
     expression: {
         raw: string | RegExp;
         compiled: CucumberExpression | RegularExpression;
@@ -106,6 +110,7 @@ export type DefinedStep = {
 // @public
 export type DefinedTestCaseHook = {
     id: string;
+    order: number;
     name?: string;
     tags?: {
         raw: string;
@@ -119,6 +124,7 @@ export type DefinedTestCaseHook = {
 // @public
 export type DefinedTestRunHook = {
     id: string;
+    order: number;
     name?: string;
     fn: SupportCodeFunction;
     sourceReference: SourceReference;

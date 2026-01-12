@@ -21,6 +21,7 @@ describe('AmbiguousError', () => {
 
     const matches: ReadonlyArray<DefinedStep> = references.map((ref) => ({
       id: 'def-id',
+      order: 0,
       expression: {
         raw: 'text',
         compiled: {} as any,
