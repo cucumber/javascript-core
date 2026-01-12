@@ -1,5 +1,12 @@
 import { CucumberExpression, RegularExpression } from '@cucumber/cucumber-expressions'
-import { IdGenerator, StepDefinitionPatternType } from '@cucumber/messages'
+import {
+  Envelope,
+  Hook,
+  IdGenerator,
+  ParameterType,
+  StepDefinition,
+  StepDefinitionPatternType,
+} from '@cucumber/messages'
 import { expect } from 'chai'
 import sinon from 'sinon'
 
@@ -421,6 +428,57 @@ describe('buildSupportCode', () => {
           },
         },
       ])
+    })
+  })
+
+  describe('envelopes', () => {
+    it('should return envelopes in the same order the support code was registered', () => {
+      const library = buildSupportCode({ newId })
+        .afterHook({
+          name: 'teardown 2',
+          fn: sinon.stub(),
+          sourceReference: { uri: 'hooks.js', location: { line: 4, column: 1 } },
+        })
+        .afterAllHook({
+          name: 'big teardown',
+          fn: sinon.stub(),
+          sourceReference: { uri: 'hooks.js', location: { line: 2, column: 1 } },
+        })
+        .beforeAllHook({
+          name: 'big setup',
+          fn: sinon.stub(),
+          sourceReference: { uri: 'hooks.js', location: { line: 1, column: 1 } },
+        })
+        .beforeHook({
+          name: 'teardown 1',
+          fn: sinon.stub(),
+          sourceReference: { uri: 'hooks.js', location: { line: 3, column: 1 } },
+        })
+        .parameterType({
+          name: 'flight',
+          regexp: /([A-Z]{3})-([A-Z]{3})/,
+          transformer(from: string, to: string) {
+            return [from, to]
+          },
+          sourceReference: { uri: 'support.js', location: { line: 1, column: 1 } },
+        })
+        .step({
+          pattern: '{flight} has been delayed',
+          fn: sinon.stub(),
+          sourceReference: { uri: 'steps.js', location: { line: 1, column: 1 } },
+        })
+        .build()
+
+      const envelopes = library.toEnvelopes()
+
+      expect(
+        envelopes.flatMap((envelope) =>
+          Object.keys(envelope).map(
+            (key) =>
+              `${key}:${(envelope[key as keyof Envelope] as Hook | ParameterType | StepDefinition).id}`
+          )
+        )
+      ).to.deep.eq(['hook:0', 'hook:1', 'hook:2', 'hook:3', 'parameterType:4', 'stepDefinition:5'])
     })
   })
 
