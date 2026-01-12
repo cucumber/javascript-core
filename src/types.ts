@@ -9,6 +9,7 @@ import {
   GherkinDocument,
   Hook,
   IdGenerator,
+  ParameterType,
   Pickle,
   PickleDocString,
   PickleTable,
@@ -164,6 +165,10 @@ export type DefinedParameterType = {
    */
   id: string
   /**
+   * The number of this parameter type in the definition-ordered sequence of support code
+   */
+  order: number
+  /**
    * The name of the parameter type
    */
   name: string
@@ -185,6 +190,10 @@ export type DefinedParameterType = {
    * A reference to the source code of the user-defined parameter type
    */
   sourceReference: SourceReference
+  /**
+   * Creates a Cucumber Message representing this parameter type
+   */
+  toMessage(): ParameterType
 }
 
 /**
@@ -196,6 +205,10 @@ export type DefinedTestCaseHook = {
    * A unique identifier for the hook
    */
   id: string
+  /**
+   * The number of this hook in the definition-ordered sequence of support code
+   */
+  order: number
   /**
    * The name of the hook, if defined
    */
@@ -231,6 +244,10 @@ export type DefinedStep = {
    */
   id: string
   /**
+   * The number of this step definition in the definition-ordered sequence of support code
+   */
+  order: number
+  /**
    * The text expression for the step, including both raw and compiled forms
    * @remarks
    * This may be a Cucumber Expression or a regular expression
@@ -262,6 +279,10 @@ export type DefinedTestRunHook = {
    * A unique identifier for the hook
    */
   id: string
+  /**
+   * The number of this hook in the definition-ordered sequence of support code
+   */
+  order: number
   /**
    * The name of the hook, if defined
    */

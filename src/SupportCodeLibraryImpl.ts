@@ -83,7 +83,9 @@ export class SupportCodeLibraryImpl implements SupportCodeLibrary {
 
   toEnvelopes() {
     return [
-      ...this.parameterTypes.map((parameterType) => ({ parameterType })),
+      ...this.parameterTypes
+        .map((definedParameterType) => definedParameterType.toMessage())
+        .map((parameterType) => ({ parameterType })),
       ...this.steps
         .map((definedStep) => definedStep.toMessage())
         .map((stepDefinition) => ({ stepDefinition })),
