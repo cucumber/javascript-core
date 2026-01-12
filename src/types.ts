@@ -374,7 +374,8 @@ export interface SupportCodeLibrary {
    */
   getAllAfterAllHooks(): ReadonlyArray<DefinedTestRunHook>
   /**
-   * Produces a list of Cucumber Messages envelopes for the support code
+   * Produces a list of Cucumber Messages envelopes for the support code,
+   * with the original definition order retained
    */
   toEnvelopes(): ReadonlyArray<Envelope>
 }
