@@ -588,7 +588,6 @@ describe('makeTestPlan', () => {
                     stepMatchArguments: [
                       {
                         group: {
-                          children: [],
                           start: 10,
                           value: '4',
                         },
@@ -596,7 +595,6 @@ describe('makeTestPlan', () => {
                       },
                       {
                         group: {
-                          children: [],
                           start: 19,
                           value: '5',
                         },
