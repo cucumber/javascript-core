@@ -222,7 +222,6 @@ function fromPickleSteps(
 
 function mapArgumentGroup(group: ExpressionsGroup): MessagesGroup {
   if (group.children === undefined) {
-    // @ts-expect-error children are optional for messages 32+ and cucumber expressions 19+
     return {
       start: group.start,
       value: group.value,
