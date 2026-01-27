@@ -555,10 +555,21 @@ describe('makeTestPlan', () => {
           fn: sinon.stub(),
           sourceReference: { uri: 'hooks.js', location: { line: 2, column: 1 } },
         })
+        .parameterType({
+          name: 'flight',
+          regexp: /([A-Z]{3})-([A-Z]{3})/,
+          transformer: sinon.stub(),
+          sourceReference: { uri: 'hooks.js', location: { line: 1, column: 1 } },
+        })
         .step({
           pattern: 'we scored {int} out of {int}',
           fn: sinon.stub(),
-          sourceReference: { uri: 'steps.js', location: { line: 1, column: 1 } },
+          sourceReference: { uri: 'steps.js', location: { line: 2, column: 1 } },
+        })
+        .step({
+          pattern: '{flight} has been delayed',
+          fn: sinon.stub(),
+          sourceReference: { uri: 'steps.js', location: { line: 3, column: 1 } },
         })
         .build()
 
@@ -572,17 +583,17 @@ describe('makeTestPlan', () => {
       expect(result.toEnvelopes()).to.deep.eq([
         {
           testCase: {
-            id: '7',
-            pickleId: '3',
+            id: '11',
+            pickleId: '5',
             testSteps: [
               {
-                hookId: '4',
-                id: '8',
+                hookId: '6',
+                id: '12',
               },
               {
-                id: '9',
-                pickleStepId: '2',
-                stepDefinitionIds: ['6'],
+                id: '13',
+                pickleStepId: '3',
+                stepDefinitionIds: ['9'],
                 stepMatchArgumentsLists: [
                   {
                     stepMatchArguments: [
@@ -605,8 +616,36 @@ describe('makeTestPlan', () => {
                 ],
               },
               {
-                hookId: '5',
-                id: '10',
+                id: '14',
+                pickleStepId: '4',
+                stepDefinitionIds: ['10'],
+                stepMatchArgumentsLists: [
+                  {
+                    stepMatchArguments: [
+                      {
+                        group: {
+                          children: [
+                            {
+                              start: 0,
+                              value: 'LHR',
+                            },
+                            {
+                              start: 4,
+                              value: 'CDG',
+                            },
+                          ],
+                          start: 0,
+                          value: 'LHR-CDG',
+                        },
+                        parameterTypeName: 'flight',
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                hookId: '7',
+                id: '15',
               },
             ],
             testRunStartedId,
