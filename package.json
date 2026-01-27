@@ -37,7 +37,7 @@
     "@cucumber/tag-expressions": "*"
   },
   "devDependencies": {
-    "@cucumber/cucumber-expressions": "^18.0.1",
+    "@cucumber/cucumber-expressions": "^19.0.0",
     "@cucumber/gherkin": "^38.0.0",
     "@cucumber/messages": "^32.0.0",
     "@cucumber/query": "^15.0.0",

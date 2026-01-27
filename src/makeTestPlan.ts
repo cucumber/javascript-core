@@ -221,6 +221,12 @@ function fromPickleSteps(
 }
 
 function mapArgumentGroup(group: ExpressionsGroup): MessagesGroup {
+  if (!group.children) {
+    return {
+      start: group.start,
+      value: group.value,
+    }
+  }
   return {
     start: group.start,
     value: group.value,
