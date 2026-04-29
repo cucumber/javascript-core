@@ -4,26 +4,26 @@
 
 ```ts
 
-import { Argument } from '@cucumber/cucumber-expressions';
-import { CucumberExpression } from '@cucumber/cucumber-expressions';
-import { CucumberExpressionGenerator } from '@cucumber/cucumber-expressions';
-import { Envelope } from '@cucumber/messages';
-import { GherkinDocument } from '@cucumber/messages';
-import { Hook } from '@cucumber/messages';
-import { IdGenerator } from '@cucumber/messages';
-import { NamingStrategy } from '@cucumber/query';
-import { ParameterType } from '@cucumber/messages';
-import parse from '@cucumber/tag-expressions';
-import { Pickle } from '@cucumber/messages';
-import { PickleDocString } from '@cucumber/messages';
+import type { Argument } from '@cucumber/cucumber-expressions';
+import type { CucumberExpression } from '@cucumber/cucumber-expressions';
+import type { CucumberExpressionGenerator } from '@cucumber/cucumber-expressions';
+import type { Envelope } from '@cucumber/messages';
+import type { GherkinDocument } from '@cucumber/messages';
+import type { Hook } from '@cucumber/messages';
+import type { IdGenerator } from '@cucumber/messages';
+import type { NamingStrategy } from '@cucumber/query';
+import type { ParameterType } from '@cucumber/messages';
+import type parse from '@cucumber/tag-expressions';
+import type { Pickle } from '@cucumber/messages';
+import type { PickleDocString } from '@cucumber/messages';
 import { PickleStep } from '@cucumber/messages';
-import { PickleTable } from '@cucumber/messages';
-import { RegularExpression } from '@cucumber/cucumber-expressions';
-import { Snippet } from '@cucumber/messages';
-import { SourceReference } from '@cucumber/messages';
-import { StepDefinition } from '@cucumber/messages';
-import { TestCase } from '@cucumber/messages';
-import { TestStep } from '@cucumber/messages';
+import type { PickleTable } from '@cucumber/messages';
+import type { RegularExpression } from '@cucumber/cucumber-expressions';
+import type { Snippet } from '@cucumber/messages';
+import type { SourceReference } from '@cucumber/messages';
+import type { StepDefinition } from '@cucumber/messages';
+import type { TestCase } from '@cucumber/messages';
+import type { TestStep } from '@cucumber/messages';
 
 // @public
 export class AmbiguousError extends Error {
