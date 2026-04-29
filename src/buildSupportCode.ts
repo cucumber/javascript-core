@@ -1,7 +1,7 @@
 import { IdGenerator } from '@cucumber/messages'
 
 import { SupportCodeBuilderImpl } from './SupportCodeBuilderImpl'
-import { SupportCodeBuilder, SupportCodeOptions } from './types'
+import type { SupportCodeBuilder, SupportCodeOptions } from './types'
 
 /**
  * Start building up a library user-defined support code

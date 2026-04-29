@@ -1,9 +1,9 @@
-import { PickleStep, SourceReference } from '@cucumber/messages'
+import type { PickleStep, SourceReference } from '@cucumber/messages'
 import { expect } from 'chai'
 import sinon from 'sinon'
 
 import { AmbiguousError } from './AmbiguousError'
-import { AmbiguousStep, DefinedStep } from './types'
+import type { AmbiguousStep, DefinedStep } from './types'
 
 describe('AmbiguousError', () => {
   it('handles source references with and without locations', () => {

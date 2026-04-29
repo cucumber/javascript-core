@@ -1,6 +1,6 @@
-import { Snippet } from '@cucumber/messages'
+import type { Snippet } from '@cucumber/messages'
 
-import { UndefinedStep } from './types'
+import type { UndefinedStep } from './types'
 
 /**
  * Represents an error that occurs when no step definitions are found matching the text of a step

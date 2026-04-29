@@ -1,7 +1,10 @@
-import { CucumberExpressionGenerator, ParameterTypeRegistry } from '@cucumber/cucumber-expressions'
-import { Envelope, SourceReference } from '@cucumber/messages'
-
 import {
+  CucumberExpressionGenerator,
+  type ParameterTypeRegistry,
+} from '@cucumber/cucumber-expressions'
+import type { Envelope, SourceReference } from '@cucumber/messages'
+
+import type {
   DefinedParameterType,
   DefinedStep,
   DefinedTestCaseHook,

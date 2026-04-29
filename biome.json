@@ -1,0 +1,25 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "extends": ["./node_modules/@cucumber/biome-config/base.json"],
+  "overrides": [
+    {
+      "includes": [
+        "**/*.spec.ts",
+        "**/*.spec.js",
+        "**/*.test.ts",
+        "**/*.test.js",
+        "**/test/**/*.ts",
+        "**/test/**/*.js",
+        "**/tests/**/*.ts",
+        "**/tests/**/*.js"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    }
+  ]
+}

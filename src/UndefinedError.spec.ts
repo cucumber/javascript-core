@@ -1,7 +1,7 @@
-import { PickleStep, Snippet } from '@cucumber/messages'
+import type { PickleStep, Snippet } from '@cucumber/messages'
 import { expect } from 'chai'
 
-import { UndefinedStep } from './types'
+import type { UndefinedStep } from './types'
 import { UndefinedError } from './UndefinedError'
 
 describe('UndefinedError', () => {

@@ -1,4 +1,4 @@
-import { PickleTable } from '@cucumber/messages'
+import type { PickleTable } from '@cucumber/messages'
 
 /**
  * Represents the cells of a Gherkin data table associated with a test step.
@@ -67,14 +67,7 @@ export class DataTable {
    */
   hashes(): ReadonlyArray<Record<string, string>> {
     const [keys, ...rows] = this.raw()
-    return rows.map((row) => {
-      return row.reduce((acc, value, index) => {
-        return {
-          ...acc,
-          [keys[index]]: value,
-        }
-      }, {})
-    })
+    return rows.map((row) => Object.fromEntries(row.map((value, index) => [keys[index], value])))
   }
 
   /**
@@ -100,13 +93,7 @@ export class DataTable {
     if (!cells.every((row) => row.length === 2)) {
       throw new Error('All rows must have exactly 2 columns')
     }
-    return cells.reduce<Record<string, string>>(
-      (result, [key, value]) => ({
-        ...result,
-        [key]: value,
-      }),
-      {}
-    )
+    return Object.fromEntries(cells)
   }
 
   /**
@@ -149,7 +136,7 @@ export class DataTable {
    * ```
    */
   transpose(): DataTable {
-    return new DataTable(this.cells[0].map((x, i) => this.cells.map((y) => y[i])))
+    return new DataTable(this.cells[0].map((_x, i) => this.cells.map((y) => y[i])))
   }
 
   /**

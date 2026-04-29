@@ -1,10 +1,10 @@
-import {
+import type {
   Argument,
   CucumberExpression,
   CucumberExpressionGenerator,
   RegularExpression,
 } from '@cucumber/cucumber-expressions'
-import {
+import type {
   Envelope,
   GherkinDocument,
   Hook,
@@ -18,14 +18,16 @@ import {
   TestCase,
   TestStep,
 } from '@cucumber/messages'
-import { NamingStrategy } from '@cucumber/query'
-import parse from '@cucumber/tag-expressions'
+import type { NamingStrategy } from '@cucumber/query'
+import type parse from '@cucumber/tag-expressions'
 
 /**
  * A function defined by the end user for a step or hook
  * @public
  */
-export type SupportCodeFunction = (...args: any[]) => any | Promise<any> // eslint-disable-line @typescript-eslint/no-explicit-any
+// biome-ignore-start lint/suspicious/noExplicitAny: user-defined functions can take and return anything
+export type SupportCodeFunction = (...args: any[]) => any | Promise<any>
+// biome-ignore-end lint/suspicious/noExplicitAny: user-defined functions can take and return anything
 
 /**
  * Options to modify how support code is built
