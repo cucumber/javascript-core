@@ -1,4 +1,4 @@
-import { PickleTable } from '@cucumber/messages'
+import type { PickleTable } from '@cucumber/messages'
 import { expect } from 'chai'
 import { describe, it } from 'mocha'
 

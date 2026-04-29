@@ -1,7 +1,7 @@
-import { GherkinDocument, IdGenerator, Pickle } from '@cucumber/messages'
 import fs from 'node:fs'
 import path from 'node:path'
 import { AstBuilder, compile, GherkinClassicTokenMatcher, Parser } from '@cucumber/gherkin'
+import { type GherkinDocument, IdGenerator, type Pickle } from '@cucumber/messages'
 
 export function parseGherkin(
   file: string,
@@ -11,7 +11,7 @@ export function parseGherkin(
   const builder = new AstBuilder(newId)
   const matcher = new GherkinClassicTokenMatcher()
   const parser = new Parser(builder, matcher)
-  const uri = 'features/' + file
+  const uri = `features/${file}`
   const gherkinDocument = {
     uri,
     ...parser.parse(data),

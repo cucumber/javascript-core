@@ -8,7 +8,7 @@ import { HookType, StepDefinitionPatternType } from '@cucumber/messages'
 import parse from '@cucumber/tag-expressions'
 
 import { SupportCodeLibraryImpl } from './SupportCodeLibraryImpl'
-import {
+import type {
   DefinedParameterType,
   DefinedStep,
   DefinedTestCaseHook,
@@ -180,7 +180,7 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
   private compileCucumberExpression(text: string): CucumberExpression | undefined {
     try {
       return new CucumberExpression(text, this.parameterTypeRegistry)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // biome-ignore lint/suspicious/noExplicitAny: cucumber-expressions throws plain objects with arbitrary shape
     } catch (e: any) {
       if ('undefinedParameterTypeName' in e) {
         if (!this.undefinedParameterTypes.has(e.undefinedParameterTypeName)) {
@@ -195,11 +195,9 @@ export class SupportCodeBuilderImpl implements SupportCodeBuilder {
   }
 
   private buildUndefinedParameterTypes(): ReadonlyArray<UndefinedParameterType> {
-    return [...this.undefinedParameterTypes.entries()]
-      .map(([name, expressions]) => {
-        return [...expressions].map((expression) => ({ name, expression }))
-      })
-      .flat()
+    return [...this.undefinedParameterTypes.entries()].flatMap(([name, expressions]) => {
+      return [...expressions].map((expression) => ({ name, expression }))
+    })
   }
 
   private buildBeforeHooks(): ReadonlyArray<DefinedTestCaseHook> {

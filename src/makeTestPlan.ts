@@ -1,22 +1,22 @@
-import { Group as ExpressionsGroup } from '@cucumber/cucumber-expressions'
+import type { Group as ExpressionsGroup } from '@cucumber/cucumber-expressions'
 import {
-  GherkinDocument,
-  Group as MessagesGroup,
+  type GherkinDocument,
   IdGenerator,
-  Location as MessagesLocation,
-  Pickle,
-  Step,
+  type Group as MessagesGroup,
+  type Location as MessagesLocation,
+  type Pickle,
+  type Step,
 } from '@cucumber/messages'
 import {
-  Lineage,
-  namingStrategy,
+  type Lineage,
   NamingStrategyExampleName,
   NamingStrategyFeatureName,
   NamingStrategyLength,
+  namingStrategy,
   Query,
 } from '@cucumber/query'
 
-import {
+import type {
   AssembledTestPlan,
   AssembledTestStep,
   SupportCodeLibrary,
@@ -79,7 +79,9 @@ export function makeTestPlan(
 function populateQuery(gherkinDocument: GherkinDocument, pickles: ReadonlyArray<Pickle>) {
   const query = new Query()
   query.update({ gherkinDocument })
-  pickles.forEach((pickle) => query.update({ pickle }))
+  for (const pickle of pickles) {
+    query.update({ pickle })
+  }
   return query
 }
 

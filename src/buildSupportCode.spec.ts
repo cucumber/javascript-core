@@ -1,17 +1,17 @@
 import { CucumberExpression, RegularExpression } from '@cucumber/cucumber-expressions'
 import {
-  Envelope,
-  Hook,
+  type Envelope,
+  type Hook,
   IdGenerator,
-  ParameterType,
-  StepDefinition,
+  type ParameterType,
+  type StepDefinition,
   StepDefinitionPatternType,
 } from '@cucumber/messages'
 import { expect } from 'chai'
 import sinon from 'sinon'
 
 import { buildSupportCode } from './buildSupportCode'
-import { SupportCodeLibrary } from './types'
+import type { SupportCodeLibrary } from './types'
 
 describe('buildSupportCode', () => {
   let newId: () => string

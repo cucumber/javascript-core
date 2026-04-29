@@ -15,8 +15,8 @@
     "docs": "typedoc",
     "exports:check": "api-extractor run --verbose",
     "exports:update": "api-extractor run --verbose --local",
-    "fix": "eslint --max-warnings 0 src --fix && prettier --write src",
-    "lint": "eslint --max-warnings 0 src && prettier --check src",
+    "fix": "biome check --fix --error-on-warnings",
+    "lint": "biome check --error-on-warnings",
     "test": "mocha \"src/**/*.spec.ts\"",
     "prepublishOnly": "npm run build"
   },
@@ -37,12 +37,13 @@
     "@cucumber/tag-expressions": "*"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.13",
+    "@cucumber/biome-config": "github:cucumber/biome-config#v0.1.0",
     "@cucumber/cucumber-expressions": "^19.0.0",
     "@cucumber/gherkin": "^39.0.0",
     "@cucumber/messages": "^32.0.0",
     "@cucumber/query": "^15.0.0",
     "@cucumber/tag-expressions": "^9.0.0",
-    "@eslint/js": "^9.31.0",
     "@microsoft/api-extractor": "^7.52.8",
     "@tsconfig/recommended": "^1.0.10",
     "@types/chai": "^5.2.3",
@@ -51,16 +52,11 @@
     "@types/sinon-chai": "^4.0.0",
     "c8": "^11.0.0",
     "chai": "^6.0.0",
-    "eslint": "^9.31.0",
-    "eslint-plugin-simple-import-sort": "^12.1.1",
-    "globals": "^17.0.0",
     "mocha": "^11.7.1",
-    "prettier": "^3.6.2",
     "sinon": "^21.0.1",
     "sinon-chai": "^4.0.1",
     "ts-node": "^10.9.2",
     "typedoc": "^0.28.7",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.37.0"
+    "typescript": "^5.8.3"
   }
 }

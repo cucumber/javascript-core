@@ -86,7 +86,7 @@ describe('makeTestPlan', () => {
         {
           newId,
           strategy: {
-            reduce(lineage, pickle) {
+            reduce(_lineage, pickle) {
               return `${pickle.id}: ${pickle.name}`
             },
           },
