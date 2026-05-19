@@ -4,6 +4,7 @@
   "compilerOptions": {
     "lib": ["dom", "es2023"],
     "target": "es2022",
+    "types": ["node", "mocha", "chai", "sinon", "sinon-chai"],
     "declaration": true,
     "outDir": "dist",
     "inlineSourceMap": true
