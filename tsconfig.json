@@ -4,8 +4,11 @@
   "compilerOptions": {
     "lib": ["es2024"],
     "target": "es2024",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "types": ["node", "mocha", "chai", "sinon", "sinon-chai"],
     "declaration": true,
-    "inlineSourceMap": true
+    "inlineSourceMap": true,
+    "inlineSources": true
   }
 }
