@@ -7,7 +7,7 @@ import {
 import { HookType, StepDefinitionPatternType } from '@cucumber/messages'
 import parse from '@cucumber/tag-expressions'
 
-import { SupportCodeLibraryImpl } from './SupportCodeLibraryImpl'
+import { SupportCodeLibraryImpl } from './SupportCodeLibraryImpl.js'
 import type {
   DefinedParameterType,
   DefinedStep,
@@ -19,7 +19,7 @@ import type {
   NewTestRunHook,
   SupportCodeBuilder,
   UndefinedParameterType,
-} from './types'
+} from './types.js'
 
 type Registered<T> = { id: string; order: number } & T
 

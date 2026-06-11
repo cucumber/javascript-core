@@ -7,7 +7,9 @@ export function parseGherkin(
   file: string,
   newId: () => string = IdGenerator.uuid()
 ): { gherkinDocument: GherkinDocument; pickles: ReadonlyArray<Pickle> } {
-  const data = fs.readFileSync(path.join(__dirname, '..', 'testdata', file), { encoding: 'utf-8' })
+  const data = fs.readFileSync(path.join(import.meta.dirname, '..', 'testdata', file), {
+    encoding: 'utf-8',
+  })
   const builder = new AstBuilder(newId)
   const matcher = new GherkinClassicTokenMatcher()
   const parser = new Parser(builder, matcher)

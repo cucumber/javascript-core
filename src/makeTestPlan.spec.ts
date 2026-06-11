@@ -3,9 +3,9 @@ import { expect, use } from 'chai'
 import sinon from 'sinon'
 import sinonChai from 'sinon-chai'
 
-import { parseGherkin } from '../test/parseGherkin'
-import { buildSupportCode } from './buildSupportCode'
-import { makeTestPlan } from './makeTestPlan'
+import { parseGherkin } from '../test/parseGherkin.js'
+import { buildSupportCode } from './buildSupportCode.js'
+import { makeTestPlan } from './makeTestPlan.js'
 
 use(sinonChai)
 

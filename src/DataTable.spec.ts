@@ -2,8 +2,8 @@ import type { PickleTable } from '@cucumber/messages'
 import { expect } from 'chai'
 import { describe, it } from 'mocha'
 
-import { parseGherkin } from '../test/parseGherkin'
-import { DataTable } from './DataTable'
+import { parseGherkin } from '../test/parseGherkin.js'
+import { DataTable } from './DataTable.js'
 
 describe('DataTable', () => {
   describe('raw', () => {

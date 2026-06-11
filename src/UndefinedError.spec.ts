@@ -1,8 +1,8 @@
 import type { PickleStep, Snippet } from '@cucumber/messages'
 import { expect } from 'chai'
 
-import type { UndefinedStep } from './types'
-import { UndefinedError } from './UndefinedError'
+import type { UndefinedStep } from './types.js'
+import { UndefinedError } from './UndefinedError.js'
 
 describe('UndefinedError', () => {
   it('should create an error message with the step text', () => {
