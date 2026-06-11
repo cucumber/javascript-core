@@ -12,7 +12,7 @@ import type {
   MatchedStep,
   SupportCodeLibrary,
   UndefinedParameterType,
-} from './types'
+} from './types.js'
 
 type OrderedEnvelope = {
   order: number

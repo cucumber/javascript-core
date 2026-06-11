@@ -22,7 +22,7 @@ import type {
   SupportCodeLibrary,
   TestPlanIngredients,
   TestPlanOptions,
-} from './types'
+} from './types.js'
 
 /**
  * Make an executable test plan for a Gherkin document

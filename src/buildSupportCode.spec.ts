@@ -10,8 +10,8 @@ import {
 import { expect } from 'chai'
 import sinon from 'sinon'
 
-import { buildSupportCode } from './buildSupportCode'
-import type { SupportCodeLibrary } from './types'
+import { buildSupportCode } from './buildSupportCode.js'
+import type { SupportCodeLibrary } from './types.js'
 
 describe('buildSupportCode', () => {
   let newId: () => string

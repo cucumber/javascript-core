@@ -1,4 +1,4 @@
-import type { AmbiguousStep } from './types'
+import type { AmbiguousStep } from './types.js'
 
 /**
  * Represents an error that occurs when multiple step definitions are found matching the text of a step

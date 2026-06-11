@@ -2,7 +2,7 @@
   "name": "@cucumber/core",
   "version": "0.8.3",
   "description": "Core test case composition library for building a Cucumber implementation",
-  "type": "commonjs",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -17,6 +17,7 @@
     "exports:update": "api-extractor run --verbose --local",
     "fix": "biome check --fix --error-on-warnings",
     "lint": "biome check --error-on-warnings",
+    "postbuild": "node -e \"require('.')\"",
     "test": "mocha \"src/**/*.spec.ts\"",
     "prepublishOnly": "npm run build"
   },
