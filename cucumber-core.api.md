@@ -177,8 +177,6 @@ export type PreparedStep = {
     type: 'prepared';
     fn: SupportCodeFunction;
     args: ReadonlyArray<Argument>;
-    dataTable?: PickleTable;
-    docString?: PickleDocString;
     stepArguments: ReadonlyArray<StepArgument>;
 };
 

@@ -231,7 +231,6 @@ describe('makeTestPlan', () => {
       if (prepared.type === 'prepared') {
         expect(prepared.fn).to.eq(fn)
         expect(prepared.args).to.deep.eq([])
-        expect(prepared.dataTable).to.eq(pickles[0].steps[0].argument?.dataTable)
         expect(prepared.stepArguments).to.deep.eq([pickles[0].steps[0].argument?.dataTable])
       }
     })
@@ -260,7 +259,6 @@ describe('makeTestPlan', () => {
       if (prepared.type === 'prepared') {
         expect(prepared.fn).to.eq(fn)
         expect(prepared.args).to.deep.eq([])
-        expect(prepared.docString).to.eq(pickles[0].steps[0].argument?.docString)
         expect(prepared.stepArguments).to.deep.eq([pickles[0].steps[0].argument?.docString])
       }
     })
@@ -289,8 +287,6 @@ describe('makeTestPlan', () => {
       if (tableFirst.type === 'prepared') {
         const dataTable = pickles[0].steps[0].argument?.dataTable
         const docString = pickles[0].steps[0].argument?.docString
-        expect(tableFirst.dataTable).to.eq(dataTable)
-        expect(tableFirst.docString).to.eq(docString)
         expect(tableFirst.stepArguments).to.deep.eq([dataTable, docString])
       }
 
@@ -299,8 +295,6 @@ describe('makeTestPlan', () => {
       if (docStringFirst.type === 'prepared') {
         const dataTable = pickles[1].steps[0].argument?.dataTable
         const docString = pickles[1].steps[0].argument?.docString
-        expect(docStringFirst.dataTable).to.eq(dataTable)
-        expect(docStringFirst.docString).to.eq(docString)
         expect(docStringFirst.stepArguments).to.deep.eq([docString, dataTable])
       }
     })

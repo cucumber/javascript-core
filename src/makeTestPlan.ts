@@ -200,8 +200,6 @@ function fromPickleSteps(
             type: 'prepared',
             fn: def.fn,
             args,
-            dataTable: pickleStep.argument?.dataTable,
-            docString: pickleStep.argument?.docString,
             stepArguments: orderStepArguments(pickleStep.argument),
           }
         }
