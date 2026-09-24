@@ -453,16 +453,25 @@ export type PreparedStep = {
    */
   args: ReadonlyArray<Argument>
   /**
-   * The data table to pass to the step, if there is one
+   * The data table and/or doc string to pass to the step, in the order they
+   * should be passed
    * @remarks
-   * Use {@link DataTable.from} to turn this into a user-friendly object
+   * This follows the order they were declared in the source, per their
+   * `argumentIndex`. Where that is not present, a data table comes before a
+   * doc string.
    */
-  dataTable?: PickleTable
-  /**
-   * The doc string to pass to the step, if there is one
-   */
-  docString?: PickleDocString
+  stepArguments: ReadonlyArray<StepArgument>
 }
+
+/**
+ * A data table or doc string argument for a step
+ * @public
+ * @remarks
+ * Narrow with `"rows" in argument` for a data table, or `"content" in argument`
+ * for a doc string. Use {@link DataTable.from} to turn a data table into a
+ * user-friendly object.
+ */
+export type StepArgument = PickleTable | PickleDocString
 
 /**
  * A step that could not be matched to any step definitions
