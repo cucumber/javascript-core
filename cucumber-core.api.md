@@ -179,7 +179,11 @@ export type PreparedStep = {
     args: ReadonlyArray<Argument>;
     dataTable?: PickleTable;
     docString?: PickleDocString;
+    stepArguments: ReadonlyArray<StepArgument>;
 };
+
+// @public
+export type StepArgument = PickleTable | PickleDocString;
 
 // @public
 export interface SupportCodeBuilder {

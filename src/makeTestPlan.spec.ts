@@ -232,6 +232,7 @@ describe('makeTestPlan', () => {
         expect(prepared.fn).to.eq(fn)
         expect(prepared.args).to.deep.eq([])
         expect(prepared.dataTable).to.eq(pickles[0].steps[0].argument?.dataTable)
+        expect(prepared.stepArguments).to.deep.eq([pickles[0].steps[0].argument?.dataTable])
       }
     })
 
@@ -260,6 +261,77 @@ describe('makeTestPlan', () => {
         expect(prepared.fn).to.eq(fn)
         expect(prepared.args).to.deep.eq([])
         expect(prepared.docString).to.eq(pickles[0].steps[0].argument?.docString)
+        expect(prepared.stepArguments).to.deep.eq([pickles[0].steps[0].argument?.docString])
+      }
+    })
+
+    it('matches and prepares a step with a data table and a doc string in source order', () => {
+      const fn = sinon.stub()
+
+      const { gherkinDocument, pickles } = parseGherkin('datatable-docstring.feature', newId)
+      const supportCodeLibrary = buildSupportCode({ newId })
+        .step({
+          pattern: 'a step with both:',
+          fn,
+          sourceReference: { uri: 'steps.js', location: { line: 1, column: 1 } },
+        })
+        .build()
+
+      const result = makeTestPlan(
+        { testRunStartedId, gherkinDocument, pickles, supportCodeLibrary },
+        {
+          newId,
+        }
+      )
+
+      const tableFirst = result.testCases[0].testSteps[0].prepare()
+      expect(tableFirst.type).to.eq('prepared')
+      if (tableFirst.type === 'prepared') {
+        const dataTable = pickles[0].steps[0].argument?.dataTable
+        const docString = pickles[0].steps[0].argument?.docString
+        expect(tableFirst.dataTable).to.eq(dataTable)
+        expect(tableFirst.docString).to.eq(docString)
+        expect(tableFirst.stepArguments).to.deep.eq([dataTable, docString])
+      }
+
+      const docStringFirst = result.testCases[1].testSteps[0].prepare()
+      expect(docStringFirst.type).to.eq('prepared')
+      if (docStringFirst.type === 'prepared') {
+        const dataTable = pickles[1].steps[0].argument?.dataTable
+        const docString = pickles[1].steps[0].argument?.docString
+        expect(docStringFirst.dataTable).to.eq(dataTable)
+        expect(docStringFirst.docString).to.eq(docString)
+        expect(docStringFirst.stepArguments).to.deep.eq([docString, dataTable])
+      }
+    })
+
+    it('prepares a data table before a doc string when no argument index is present', () => {
+      const fn = sinon.stub()
+
+      const { gherkinDocument, pickles } = parseGherkin('datatable-docstring.feature', newId)
+      const dataTable = pickles[1].steps[0].argument?.dataTable
+      const docString = pickles[1].steps[0].argument?.docString
+      delete dataTable?.argumentIndex
+      delete docString?.argumentIndex
+      const supportCodeLibrary = buildSupportCode({ newId })
+        .step({
+          pattern: 'a step with both:',
+          fn,
+          sourceReference: { uri: 'steps.js', location: { line: 1, column: 1 } },
+        })
+        .build()
+
+      const result = makeTestPlan(
+        { testRunStartedId, gherkinDocument, pickles, supportCodeLibrary },
+        {
+          newId,
+        }
+      )
+
+      const prepared = result.testCases[1].testSteps[0].prepare()
+      expect(prepared.type).to.eq('prepared')
+      if (prepared.type === 'prepared') {
+        expect(prepared.stepArguments).to.deep.eq([dataTable, docString])
       }
     })
   })

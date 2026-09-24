@@ -5,6 +5,7 @@ import {
   type Group as MessagesGroup,
   type Location as MessagesLocation,
   type Pickle,
+  type PickleStepArgument,
   type Step,
 } from '@cucumber/messages'
 import {
@@ -19,6 +20,7 @@ import {
 import type {
   AssembledTestPlan,
   AssembledTestStep,
+  StepArgument,
   SupportCodeLibrary,
   TestPlanIngredients,
   TestPlanOptions,
@@ -108,6 +110,7 @@ function fromBeforeHooks(
           type: 'prepared' as const,
           fn: def.fn,
           args: [],
+          stepArguments: [],
         }
       },
       toMessage() {
@@ -146,6 +149,7 @@ function fromAfterHooks(
             type: 'prepared' as const,
             fn: def.fn,
             args: [],
+            stepArguments: [],
           }
         },
         toMessage() {
@@ -198,6 +202,7 @@ function fromPickleSteps(
             args,
             dataTable: pickleStep.argument?.dataTable,
             docString: pickleStep.argument?.docString,
+            stepArguments: orderStepArguments(pickleStep.argument),
           }
         }
       },
@@ -220,6 +225,20 @@ function fromPickleSteps(
       },
     }
   })
+}
+
+function orderStepArguments(argument?: PickleStepArgument): ReadonlyArray<StepArgument> {
+  const stepArguments: Array<StepArgument> = []
+  if (argument?.dataTable) {
+    stepArguments.push(argument.dataTable)
+  }
+  if (argument?.docString) {
+    stepArguments.push(argument.docString)
+  }
+  return stepArguments.sort(
+    (a, b) =>
+      (a.argumentIndex ?? Number.MAX_SAFE_INTEGER) - (b.argumentIndex ?? Number.MAX_SAFE_INTEGER)
+  )
 }
 
 function mapArgumentGroup(group: ExpressionsGroup): MessagesGroup {
